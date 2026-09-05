@@ -155,7 +155,9 @@ describe('Invariant T: parse(print(parse(t))) === parse(t)', () => {
   }
 
   function seqArb(depth: number): fc.Arbitrary<string> {
-    return fc.array(elementArb(depth), { minLength: 1, maxLength: 4 }).map((els) => els.join(''));
+    return fc
+      .array(elementArb(depth), { minLength: 1, maxLength: 4 })
+      .map((els) => els.join(''));
   }
 
   const templateStringArb = seqArb(3);

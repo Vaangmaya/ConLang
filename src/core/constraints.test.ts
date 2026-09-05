@@ -10,13 +10,21 @@ const CLASSES: PhonemeClass[] = [
 
 describe('checkConstraints: BannedSequence', () => {
   it('passes when the sequence never occurs (scope anywhere)', () => {
-    const c: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'anywhere' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'anywhere',
+    };
     const result = checkConstraints(['p', 'a', 't'], [0], [c], CLASSES);
     expect(result.ok).toBe(true);
   });
 
   it('fails when the sequence occurs anywhere', () => {
-    const c: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'anywhere' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'anywhere',
+    };
     const result = checkConstraints(['p', 's', 't', 'a'], [0], [c], CLASSES);
     expect(result.ok).toBe(false);
     expect(result.failedConstraint).toEqual(c);
@@ -24,19 +32,31 @@ describe('checkConstraints: BannedSequence', () => {
 
   it('resolves class-ref tokens against phoneme classes', () => {
     // N (nasal class) followed by "p" is banned.
-    const c: Constraint = { type: 'BannedSequence', sequence: ['N', 'p'], scope: 'anywhere' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['N', 'p'],
+      scope: 'anywhere',
+    };
     expect(checkConstraints(['a', 'm', 'p', 'a'], [0], [c], CLASSES).ok).toBe(false);
     expect(checkConstraints(['a', 'm', 'a'], [0], [c], CLASSES).ok).toBe(true);
   });
 
   it('wordInitial only checks the first window', () => {
-    const c: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'wordInitial' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'wordInitial',
+    };
     expect(checkConstraints(['s', 't', 'a'], [0], [c], CLASSES).ok).toBe(false);
     expect(checkConstraints(['a', 's', 't'], [0], [c], CLASSES).ok).toBe(true);
   });
 
   it('wordFinal only checks the last window', () => {
-    const c: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'wordFinal' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'wordFinal',
+    };
     expect(checkConstraints(['a', 's', 't'], [0], [c], CLASSES).ok).toBe(false);
     expect(checkConstraints(['s', 't', 'a'], [0], [c], CLASSES).ok).toBe(true);
   });
@@ -45,20 +65,30 @@ describe('checkConstraints: BannedSequence', () => {
     // "s","t" straddling a syllable boundary at index 2: syllables are "as" and "ta".
     const phonemeIds = ['a', 's', 't', 'a'];
     const syllableBreaks = [0, 2];
-    const within: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'withinSyllable' };
+    const within: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'withinSyllable',
+    };
     const across: Constraint = {
       type: 'BannedSequence',
       sequence: ['s', 't'],
       scope: 'acrossSyllableBoundary',
     };
     expect(checkConstraints(phonemeIds, syllableBreaks, [within], CLASSES).ok).toBe(true);
-    expect(checkConstraints(phonemeIds, syllableBreaks, [across], CLASSES).ok).toBe(false);
+    expect(checkConstraints(phonemeIds, syllableBreaks, [across], CLASSES).ok).toBe(
+      false,
+    );
   });
 
   it('withinSyllable fails when the sequence is inside one syllable', () => {
     const phonemeIds = ['s', 't', 'a'];
     const syllableBreaks = [0];
-    const c: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'withinSyllable' };
+    const c: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'withinSyllable',
+    };
     expect(checkConstraints(phonemeIds, syllableBreaks, [c], CLASSES).ok).toBe(false);
   });
 });
@@ -94,7 +124,9 @@ describe('checkConstraints: Sonority', () => {
 
   it('throws when a phoneme id has no scale entry', () => {
     const c: Constraint = { type: 'Sonority', scale: { p: 1 }, allowPlateaus: false };
-    expect(() => checkConstraints(['p', 'a'], [0], [c], CLASSES)).toThrow(/no scale entry/);
+    expect(() => checkConstraints(['p', 'a'], [0], [c], CLASSES)).toThrow(
+      /no scale entry/,
+    );
   });
 });
 
@@ -139,7 +171,11 @@ describe('checkConstraints: RequiredOnset', () => {
 
 describe('checkConstraints: ordering', () => {
   it('reports the first failing constraint in array order', () => {
-    const banned: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'anywhere' };
+    const banned: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'anywhere',
+    };
     const onset: Constraint = { type: 'RequiredOnset', scope: 'wordInitial' };
     // "ast" fails both: contains "st" and starts with a vowel.
     const forward = checkConstraints(['a', 's', 't'], [0], [banned, onset], CLASSES);
@@ -150,7 +186,11 @@ describe('checkConstraints: ordering', () => {
   });
 
   it('passes when every constraint is satisfied', () => {
-    const banned: Constraint = { type: 'BannedSequence', sequence: ['s', 't'], scope: 'anywhere' };
+    const banned: Constraint = {
+      type: 'BannedSequence',
+      sequence: ['s', 't'],
+      scope: 'anywhere',
+    };
     const onset: Constraint = { type: 'RequiredOnset', scope: 'wordInitial' };
     const result = checkConstraints(['p', 'a'], [0], [banned, onset], CLASSES);
     expect(result).toEqual({ ok: true });

@@ -49,7 +49,10 @@ export interface ConstraintCheckResult {
 }
 
 /** [start, end) index ranges for each syllable, derived from its start indices. */
-function syllableSpans(syllableBreaks: number[], length: number): Array<[number, number]> {
+function syllableSpans(
+  syllableBreaks: number[],
+  length: number,
+): Array<[number, number]> {
   return syllableBreaks.map((start, i): [number, number] => [
     start,
     i + 1 < syllableBreaks.length ? syllableBreaks[i + 1] : length,
@@ -62,7 +65,11 @@ function resolveToken(token: string, classes: PhonemeClass[]): Set<string> {
   return cls ? new Set(cls.members) : new Set([token]);
 }
 
-function windowMatches(phonemeIds: string[], start: number, matchers: Set<string>[]): boolean {
+function windowMatches(
+  phonemeIds: string[],
+  start: number,
+  matchers: Set<string>[],
+): boolean {
   for (let i = 0; i < matchers.length; i++) {
     if (!matchers[i].has(phonemeIds[start + i])) return false;
   }

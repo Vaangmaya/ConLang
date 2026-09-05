@@ -9,7 +9,13 @@ function mkPhoneme(id: string, kind: 'consonant' | 'vowel'): Phoneme {
     features:
       kind === 'consonant'
         ? { kind: 'consonant', place: 'alveolar', manner: 'stop', voiced: false }
-        : { kind: 'vowel', height: 'low', backness: 'front', rounded: false, long: false },
+        : {
+            kind: 'vowel',
+            height: 'low',
+            backness: 'front',
+            rounded: false,
+            long: false,
+          },
     weight: 1,
     romanization: id,
   };
@@ -18,7 +24,11 @@ function mkPhoneme(id: string, kind: 'consonant' | 'vowel'): Phoneme {
 describe('resolveClasses', () => {
   it('auto-derives C and V from the inventory when not user-defined', () => {
     const inv: Inventory = {
-      phonemes: [mkPhoneme('p', 'consonant'), mkPhoneme('t', 'consonant'), mkPhoneme('a', 'vowel')],
+      phonemes: [
+        mkPhoneme('p', 'consonant'),
+        mkPhoneme('t', 'consonant'),
+        mkPhoneme('a', 'vowel'),
+      ],
     };
     const resolved = resolveClasses([], inv);
     const c = resolved.find((cl) => cl.symbol === 'C');
@@ -29,7 +39,11 @@ describe('resolveClasses', () => {
 
   it('lets a user-defined C class override auto-derivation', () => {
     const inv: Inventory = {
-      phonemes: [mkPhoneme('p', 'consonant'), mkPhoneme('t', 'consonant'), mkPhoneme('a', 'vowel')],
+      phonemes: [
+        mkPhoneme('p', 'consonant'),
+        mkPhoneme('t', 'consonant'),
+        mkPhoneme('a', 'vowel'),
+      ],
     };
     const resolved = resolveClasses([{ symbol: 'C', members: ['p'] }], inv);
     const c = resolved.find((cl) => cl.symbol === 'C');
@@ -41,7 +55,10 @@ describe('resolveClasses', () => {
   it('passes through non-C/V user classes unchanged', () => {
     const inv = starterInventory();
     const resolved = resolveClasses([{ symbol: 'N', members: ['m', 'n'] }], inv);
-    expect(resolved.find((cl) => cl.symbol === 'N')).toEqual({ symbol: 'N', members: ['m', 'n'] });
+    expect(resolved.find((cl) => cl.symbol === 'N')).toEqual({
+      symbol: 'N',
+      members: ['m', 'n'],
+    });
   });
 
   it('throws on duplicate user-defined symbols', () => {

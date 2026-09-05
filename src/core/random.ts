@@ -19,7 +19,8 @@ export function weightedChoice<T>(items: T[], weights: number[], rng: Rng): T {
     throw new Error('weightedChoice: items and weights must be the same length.');
   }
   const total = weights.reduce((sum, w) => sum + w, 0);
-  if (!(total > 0)) throw new Error('weightedChoice: weights must sum to a positive number.');
+  if (!(total > 0))
+    throw new Error('weightedChoice: weights must sum to a positive number.');
   const r = rng() * total;
   let cumulative = 0;
   for (let i = 0; i < items.length; i++) {

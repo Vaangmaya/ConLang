@@ -77,11 +77,15 @@ export function parseTemplate(raw: string, knownClasses: string[]): TemplatePars
       );
     }
     if (peek() !== ')') {
-      throw new InternalParseError(`Expected ")" to close group opened at position ${openPos}.`, pos);
+      throw new InternalParseError(
+        `Expected ")" to close group opened at position ${openPos}.`,
+        pos,
+      );
     }
     pos++; // consume ')'
     const prob = peek() === ':' ? parseProb() : DEFAULT_PROB;
-    const body: TemplateNode = elements.length === 1 ? elements[0] : { type: 'Seq', elements };
+    const body: TemplateNode =
+      elements.length === 1 ? elements[0] : { type: 'Seq', elements };
     return { type: 'Optional', prob, body };
   }
 
@@ -89,7 +93,10 @@ export function parseTemplate(raw: string, knownClasses: string[]): TemplatePars
     const ch = peek();
     if (ch === '(') return parseGroup();
     if (ch === ')') {
-      throw new InternalParseError(`Unexpected ")" at position ${pos} — no matching "(".`, pos);
+      throw new InternalParseError(
+        `Unexpected ")" at position ${pos} — no matching "(".`,
+        pos,
+      );
     }
     if (ch !== undefined && /[A-Z]/.test(ch)) return parseClassRef();
     throw new InternalParseError(
@@ -114,7 +121,8 @@ export function parseTemplate(raw: string, knownClasses: string[]): TemplatePars
       );
     }
     const elements = parseElements();
-    const ast: TemplateNode = elements.length === 1 ? elements[0] : { type: 'Seq', elements };
+    const ast: TemplateNode =
+      elements.length === 1 ? elements[0] : { type: 'Seq', elements };
     return { ok: true, ast };
   } catch (e) {
     if (e instanceof InternalParseError) {
