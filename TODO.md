@@ -41,13 +41,13 @@ DESIGN.md §4.6, fixtures, stats.
 
 DESIGN.md §4.7.
 
-- [ ] `soundchange/parser.ts`: rule notation parser, located errors
-- [ ] `soundchange/apply.ts`: ordered, simultaneous, non-feeding application
-- [ ] `soundchange/derivation.ts`: per-word derivation trace
-- [ ] `fixtures/grimm.rules`, `fixtures/grimm.expected.json`
-- [ ] Rule parser errors are located and readable
-- [ ] Grimm golden test passes
-- [ ] Derivation traces recorded for every word
+- [x] `soundchange/parser.ts`: rule notation parser, located errors
+- [x] `soundchange/apply.ts`: ordered, simultaneous, non-feeding application
+- [x] `soundchange/derivation.ts`: per-word derivation trace
+- [x] `fixtures/grimm.rules`, `fixtures/grimm.expected.json`
+- [x] Rule parser errors are located and readable
+- [x] Grimm golden test passes
+- [x] Derivation traces recorded for every word
 
 ## Phase 5 — UI
 
