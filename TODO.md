@@ -30,12 +30,12 @@ DESIGN.md §4.3–§4.5.
 
 DESIGN.md §4.6, fixtures, stats.
 
-- [ ] `recognizer.ts`: memoized recursive descent `accepts`
-- [ ] `fixtures/hawaiian.json`, `fixtures/japanese-lite.json`
-- [ ] `stats.ts`: Gusein-Zade default weights, `frequencyReport`
-- [ ] Invariant G passes on both fixtures (1,000 seeded words each)
-- [ ] Hawaiian snapshot test (50 words, seed 42) passes
-- [ ] Statistical test (n=10,000, seed 1, ±20% relative) passes
+- [x] `recognizer.ts`: memoized recursive descent `accepts`
+- [x] `fixtures/hawaiian.json`, `fixtures/japanese-lite.json`
+- [x] `stats.ts`: Gusein-Zade default weights, `frequencyReport`
+- [x] Invariant G passes on both fixtures (1,000 seeded words each)
+- [x] Hawaiian snapshot test (50 words, seed 42) passes
+- [x] Statistical test (n=10,000, seed 1, ±20% relative) passes
 
 ## Phase 4 — Sound changes
 
