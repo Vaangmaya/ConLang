@@ -183,7 +183,7 @@ Deterministic given a seed. Algorithm per word: sample syllable count from `syll
 
 ### 4.5 Constraints (`constraints.ts`)
 
-v1 constraint types, each a predicate over `(phonemeIds, syllableBreaks, inv)`:
+v1 constraint types, each a predicate over `(phonemeIds, syllableBreaks, inv)`. In practice `checkConstraints` takes pre-resolved `classes: PhonemeClass[]` (see `classes.ts`) rather than a raw `Inventory`: only `BannedSequence`'s class-ref tokens and `RequiredOnset`'s consonant check need class resolution, and both are resolved once per `generate()` call rather than per constraint check.
 
 1. `BannedSequence` — a sequence of class refs and/or phoneme literals; scope: `anywhere | wordInitial | wordFinal | withinSyllable | acrossSyllableBoundary`.
 2. `Sonority` — onsets rise, codas fall, per a configurable sonority scale (default: stop 1 < affricate 2 < fricative 3 < nasal 4 < lateral/liquid 5 < approximant/glide 6 < vowel 7); ties configurable as allowed/banned.
