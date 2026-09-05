@@ -36,6 +36,10 @@ export interface PreviewState {
 
 export interface WorkbenchState {
   project: Project;
+  /** Bumped only on whole-project swaps (load/reset/fork), never on field edits —
+   * pages key local editing state off this to reset drafts without losing
+   * in-progress edits on every keystroke. */
+  projectVersion: number;
   importErrors: ProjectValidationError[] | null;
   lexiconDiagnostics: GenDiagnostics | null;
   lexiconError: string | null;
@@ -65,6 +69,7 @@ export interface WorkbenchState {
 
 export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   project: createDefaultProject(),
+  projectVersion: 0,
   importErrors: null,
   lexiconDiagnostics: null,
   lexiconError: null,
@@ -159,21 +164,32 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         lexicon,
         rules: [],
       },
+      projectVersion: s.projectVersion + 1,
     })),
 
   loadProject: (json) => {
     const result = parseProject(json);
     if (result.ok) {
-      set({ project: result.project, importErrors: null });
+      set((s) => ({
+        project: result.project,
+        importErrors: null,
+        projectVersion: s.projectVersion + 1,
+      }));
     } else {
       set({ importErrors: result.errors });
     }
   },
 
-  setProject: (project) => set({ project, importErrors: null }),
+  setProject: (project) =>
+    set((s) => ({ project, importErrors: null, projectVersion: s.projectVersion + 1 })),
 
   resetProject: () =>
-    set({ project: createDefaultProject(), importErrors: null, preview: null }),
+    set((s) => ({
+      project: createDefaultProject(),
+      importErrors: null,
+      preview: null,
+      projectVersion: s.projectVersion + 1,
+    })),
 
   clearImportErrors: () => set({ importErrors: null }),
 }));
