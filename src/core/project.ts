@@ -127,10 +127,35 @@ const generatedWordSchema = z.object({
   seed: z.number(),
 });
 
+const featureSpecSchema = z.object({
+  sign: z.enum(['+', '-']),
+  name: z.string(),
+});
+
+const atomSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('ipaLiteral'), value: z.string() }),
+  z.object({ type: z.literal('classRef'), symbol: z.string() }),
+  z.object({ type: z.literal('featureSet'), features: z.array(featureSpecSchema) }),
+  z.object({ type: z.literal('boundary') }),
+]);
+
+const seqOrEpsilonSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('seq'), atoms: z.array(atomSchema) }),
+  z.object({ type: z.literal('epsilon') }),
+]);
+
+const soundChangeAstSchema = z.object({
+  target: seqOrEpsilonSchema,
+  replacement: seqOrEpsilonSchema,
+  before: z.array(atomSchema).optional(),
+  after: z.array(atomSchema).optional(),
+});
+
 const soundChangeRuleSchema = z.object({
   id: z.string(),
   raw: z.string(),
   enabled: z.boolean(),
+  ast: soundChangeAstSchema.optional(),
 });
 
 export const projectSchema = z.object({
