@@ -4,22 +4,13 @@
 import { useMemo, useState } from 'react';
 import { exportLexiconCsv, exportLexiconJson } from '../../core/project';
 import { render } from '../../core/romanization';
+import { downloadTextFile } from '../download';
 import { randomSeed, useWorkbenchStore } from '../state/store';
 
 const MAX_WORDS = 5000;
 
 type SortColumn = 'ipa' | 'romanization' | 'syllables';
 type SortDirection = 'asc' | 'desc';
-
-function downloadTextFile(filename: string, content: string, mime: string): void {
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 export function LexiconPage(): JSX.Element {
   const project = useWorkbenchStore((s) => s.project);
