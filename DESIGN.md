@@ -28,6 +28,7 @@ conlang-workbench/
 │   │   ├── features.ts    # feature system, natural-class queries
 │   │   ├── phoneme.ts     # Phoneme, Inventory
 │   │   ├── romanization.ts# longest-match tokenizer, renderer
+│   │   ├── classes.ts     # PhonemeClass resolution, auto C/V (shared by constraints.ts, generator.ts)
 │   │   ├── template/
 │   │   │   ├── ast.ts
 │   │   │   └── parser.ts  # syllable-template grammar (§4.3)

@@ -1,14 +1,10 @@
 // Word generation (DESIGN.md §4.4). Deterministic given a seed; all randomness
 // flows through the injected PRNG from random.ts.
 
+import type { PhonemeClass } from './classes';
 import type { Constraint } from './constraints';
 import type { Inventory } from './phoneme';
 import type { TemplateNode } from './template/ast';
-
-export interface PhonemeClass {
-  symbol: string; // uppercase single letter -> phoneme ids; C and V are auto-derived, overridable
-  members: string[];
-}
 
 export interface SyllableTemplate {
   raw: string;
