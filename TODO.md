@@ -18,13 +18,13 @@ Phases mirror DESIGN.md §7. Check a box only when its "Done when" criteria pass
 
 DESIGN.md §4.3–§4.5.
 
-- [ ] `template/ast.ts`, `template/parser.ts`: parse + print, located errors
-- [ ] `constraints.ts`: BannedSequence, Sonority, VowelHarmony, RequiredOnset
-- [ ] `generator.ts`: seeded weighted generation, constraint rejection loop
-- [ ] Invariant T (template parse/print round-trip) passes
-- [ ] All four constraint types unit-tested
-- [ ] Unsatisfiability diagnostic test passes
-- [ ] 10k-word generation < 2s in CI
+- [x] `template/ast.ts`, `template/parser.ts`: parse + print, located errors
+- [x] `constraints.ts`: BannedSequence, Sonority, VowelHarmony, RequiredOnset
+- [x] `generator.ts`: seeded weighted generation, constraint rejection loop
+- [x] Invariant T (template parse/print round-trip) passes
+- [x] All four constraint types unit-tested
+- [x] Unsatisfiability diagnostic test passes
+- [x] 10k-word generation < 2s in CI
 
 ## Phase 3 — Recognizer and validation
 
