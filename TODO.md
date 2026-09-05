@@ -6,13 +6,13 @@ Phases mirror DESIGN.md §7. Check a box only when its "Done when" criteria pass
 
 `features`, `phoneme`, `romanization`, seeded `random` (DESIGN.md §4.1, §4.2).
 
-- [ ] `features.ts`: feature types, `matchesFeatures`, `naturalClass`
-- [ ] `phoneme.ts`: `Phoneme`, `Inventory`, starter IPA inventory
-- [ ] `romanization.ts`: `render`, `tokenize`, collision detection
+- [x] `features.ts`: feature types, `matchesFeatures`, `naturalClass`
+- [x] `phoneme.ts`: `Phoneme`, `Inventory`, starter IPA inventory
+- [x] `romanization.ts`: `render`, `tokenize`, collision detection
 - [x] `random.ts`: seeded mulberry32 PRNG
-- [ ] Invariant R (romanization round-trip) property test passes
-- [ ] Collision detection unit-tested
-- [ ] Starter IPA inventory loads
+- [x] Invariant R (romanization round-trip) property test passes
+- [x] Collision detection unit-tested
+- [x] Starter IPA inventory loads
 
 ## Phase 2 — Templates, generator, constraints
 
