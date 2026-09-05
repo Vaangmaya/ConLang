@@ -1,0 +1,61 @@
+@import './assets/fonts/fonts.css';
+
+:root {
+  --font-ui: system-ui, sans-serif;
+  --font-ipa: 'Noto Sans IPA', 'Noto Sans', system-ui, sans-serif;
+  --color-border: #d0d0d0;
+  --color-bg-alt: #f5f5f5;
+  --color-accent: #2b5fa3;
+  --color-danger: #a33232;
+  --color-warning: #8a6d00;
+  --color-warning-bg: #fff6dd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: #1a1a1a;
+}
+
+.ipa {
+  font-family: var(--font-ipa);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--color-border);
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input,
+select {
+  font: inherit;
+}
+
+.warning-banner {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin-block: 0.5rem;
+}
+
+.error-text {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
