@@ -1,0 +1,256 @@
+{
+  "inventory": {
+    "phonemes": [
+      {
+        "id": "m",
+        "ipa": "m",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "nasal",
+          "voiced": true
+        },
+        "weight": 0.2747,
+        "romanization": "m"
+      },
+      {
+        "id": "n",
+        "ipa": "n",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "nasal",
+          "voiced": true
+        },
+        "weight": 0.188,
+        "romanization": "n"
+      },
+      {
+        "id": "k",
+        "ipa": "k",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.1373,
+        "romanization": "k"
+      },
+      {
+        "id": "p",
+        "ipa": "p",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.1014,
+        "romanization": "p"
+      },
+      {
+        "id": "l",
+        "ipa": "l",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "lateral",
+          "voiced": true
+        },
+        "weight": 0.0735,
+        "romanization": "l"
+      },
+      {
+        "id": "w",
+        "ipa": "w",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "approximant",
+          "voiced": true
+        },
+        "weight": 0.0507,
+        "romanization": "w"
+      },
+      {
+        "id": "h",
+        "ipa": "h",
+        "features": {
+          "kind": "consonant",
+          "place": "glottal",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 0.0314,
+        "romanization": "h"
+      },
+      {
+        "id": "ʔ",
+        "ipa": "ʔ",
+        "features": {
+          "kind": "consonant",
+          "place": "glottal",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.0147,
+        "romanization": "ʻ"
+      },
+
+      {
+        "id": "a",
+        "ipa": "a",
+        "features": {
+          "kind": "vowel",
+          "height": "low",
+          "backness": "central",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.2398,
+        "romanization": "a"
+      },
+      {
+        "id": "i",
+        "ipa": "i",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.1705,
+        "romanization": "i"
+      },
+      {
+        "id": "e",
+        "ipa": "e",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.1299,
+        "romanization": "e"
+      },
+      {
+        "id": "o",
+        "ipa": "o",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "back",
+          "rounded": true,
+          "long": false
+        },
+        "weight": 0.1012,
+        "romanization": "o"
+      },
+      {
+        "id": "u",
+        "ipa": "u",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "back",
+          "rounded": true,
+          "long": false
+        },
+        "weight": 0.0788,
+        "romanization": "u"
+      },
+      {
+        "id": "aː",
+        "ipa": "aː",
+        "features": {
+          "kind": "vowel",
+          "height": "low",
+          "backness": "central",
+          "rounded": false,
+          "long": true
+        },
+        "weight": 0.0606,
+        "romanization": "ā"
+      },
+      {
+        "id": "iː",
+        "ipa": "iː",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "front",
+          "rounded": false,
+          "long": true
+        },
+        "weight": 0.0452,
+        "romanization": "ī"
+      },
+      {
+        "id": "eː",
+        "ipa": "eː",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "front",
+          "rounded": false,
+          "long": true
+        },
+        "weight": 0.0318,
+        "romanization": "ē"
+      },
+      {
+        "id": "oː",
+        "ipa": "oː",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "back",
+          "rounded": true,
+          "long": true
+        },
+        "weight": 0.0201,
+        "romanization": "ō"
+      },
+      {
+        "id": "uː",
+        "ipa": "uː",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "back",
+          "rounded": true,
+          "long": true
+        },
+        "weight": 0.0095,
+        "romanization": "ū"
+      }
+    ]
+  },
+  "grammar": {
+    "classes": [],
+    "templates": [
+      {
+        "raw": "V",
+        "ast": { "type": "ClassRef", "symbol": "V" },
+        "weight": 0.3
+      },
+      {
+        "raw": "CV",
+        "ast": {
+          "type": "Seq",
+          "elements": [
+            { "type": "ClassRef", "symbol": "C" },
+            { "type": "ClassRef", "symbol": "V" }
+          ]
+        },
+        "weight": 0.7
+      }
+    ],
+    "syllableCount": { "min": 1, "max": 5, "weights": [0.35, 0.3, 0.2, 0.1, 0.05] },
+    "constraints": []
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "inventory": {
+    "phonemes": [
+      {
+        "id": "k",
+        "ipa": "k",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.2558,
+        "romanization": "k"
+      },
+      {
+        "id": "t",
+        "ipa": "t",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.1788,
+        "romanization": "t"
+      },
+      {
+        "id": "n",
+        "ipa": "n",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "nasal",
+          "voiced": true
+        },
+        "weight": 0.1338,
+        "romanization": "n"
+      },
+      {
+        "id": "s",
+        "ipa": "s",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 0.1018,
+        "romanization": "s"
+      },
+      {
+        "id": "m",
+        "ipa": "m",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "nasal",
+          "voiced": true
+        },
+        "weight": 0.077,
+        "romanization": "m"
+      },
+      {
+        "id": "r",
+        "ipa": "ɾ",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "tap",
+          "voiced": true
+        },
+        "weight": 0.0568,
+        "romanization": "r"
+      },
+      {
+        "id": "h",
+        "ipa": "h",
+        "features": {
+          "kind": "consonant",
+          "place": "glottal",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 0.0396,
+        "romanization": "h"
+      },
+      {
+        "id": "w",
+        "ipa": "w",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "approximant",
+          "voiced": true
+        },
+        "weight": 0.0248,
+        "romanization": "w"
+      },
+      {
+        "id": "p",
+        "ipa": "p",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 0.0117,
+        "romanization": "p"
+      },
+
+      {
+        "id": "a",
+        "ipa": "a",
+        "features": {
+          "kind": "vowel",
+          "height": "low",
+          "backness": "central",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.3584,
+        "romanization": "a"
+      },
+      {
+        "id": "i",
+        "ipa": "i",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.2197,
+        "romanization": "i"
+      },
+      {
+        "id": "u",
+        "ipa": "ɯ",
+        "features": {
+          "kind": "vowel",
+          "height": "high",
+          "backness": "back",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.1386,
+        "romanization": "u"
+      },
+      {
+        "id": "o",
+        "ipa": "o",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "back",
+          "rounded": true,
+          "long": false
+        },
+        "weight": 0.0811,
+        "romanization": "o"
+      },
+      {
+        "id": "e",
+        "ipa": "e",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 0.0365,
+        "romanization": "e"
+      }
+    ]
+  },
+  "grammar": {
+    "classes": [{ "symbol": "N", "members": ["n"] }],
+    "templates": [
+      {
+        "raw": "CV(N)",
+        "ast": {
+          "type": "Seq",
+          "elements": [
+            { "type": "ClassRef", "symbol": "C" },
+            { "type": "ClassRef", "symbol": "V" },
+            {
+              "type": "Optional",
+              "prob": 0.5,
+              "body": { "type": "ClassRef", "symbol": "N" }
+            }
+          ]
+        },
+        "weight": 1
+      }
+    ],
+    "syllableCount": { "min": 1, "max": 4, "weights": [0.2, 0.4, 0.3, 0.1] },
+    "constraints": []
+  }
+}
