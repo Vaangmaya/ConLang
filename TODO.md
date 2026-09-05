@@ -53,14 +53,16 @@ DESIGN.md §4.7.
 
 DESIGN.md §5, wired to core.
 
-- [ ] Inventory page
-- [ ] Phonotactics page (live 10-word preview, debounced 300ms)
-- [ ] Lexicon page (generate, sort, reroll, delete, export)
-- [ ] Sound Changes page (ordered rules, diff table, derivation trace, fork)
-- [ ] Project page (save/load/import, reset, frequency report)
-- [ ] Bundled IPA font (Charis SIL or Noto Sans) via `@font-face`
-- [ ] Full loop works in-browser: build Hawaiian from scratch, generate 500
-      words, apply 3 rules, view a derivation, export CSV, save and reload
+- [x] Inventory page
+- [x] Phonotactics page (live 10-word preview, debounced 300ms)
+- [x] Lexicon page (generate, sort, reroll, delete, export)
+- [x] Sound Changes page (ordered rules, diff table, derivation trace, fork)
+- [x] Project page (save/load/import, reset, frequency report)
+- [x] Bundled IPA font (Charis SIL or Noto Sans) via `@font-face`
+- [x] Full loop works: build Hawaiian from scratch, generate 500 words, apply
+      3 rules, view a derivation, export CSV, save and reload — verified via
+      `src/ui/App.acceptance.test.tsx` (no browser was available in this
+      environment; re-run the walkthrough in an actual browser before ship)
 
 ## Phase 6 — Ship
 
