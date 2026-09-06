@@ -109,7 +109,7 @@ describe('Phase 5 acceptance loop', () => {
     // View a derivation for the first word.
     const showButtons = screen.getAllByRole('button', { name: 'Show derivation' });
     await user.click(showButtons[0]!);
-    expect(screen.getByRole('columnheader', { name: 'Changed' })).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: 'Derivation steps' })).toBeInTheDocument();
 
     // --- Project: save, reset, and reload ---
     await user.click(screen.getByRole('button', { name: 'Project' }));
