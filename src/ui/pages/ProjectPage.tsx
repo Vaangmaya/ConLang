@@ -1,4 +1,5 @@
 // Project page (DESIGN.md §5.5): name, save/load/import, reset, frequency report.
+// The colophon — quiet and administrative, the page a book ends on.
 
 import { useRef } from 'react';
 import { serializeProject } from '../../core/project';
@@ -48,7 +49,7 @@ export function ProjectPage(): JSX.Element {
   const frequencies = frequencyReport(project.lexicon, project.inventory);
 
   return (
-    <section aria-label="Project">
+    <section aria-label="Project" className="colophon">
       <h2>Project</h2>
 
       <label>
@@ -86,7 +87,9 @@ export function ProjectPage(): JSX.Element {
 
       {importErrors && (
         <div className="warning-banner" role="alert">
-          <strong>Couldn't load project:</strong>
+          <strong>
+            Couldn't load project — the file doesn't match the expected format:
+          </strong>
           <ul>
             {importErrors.map((err, i) => (
               <li key={i}>
@@ -101,24 +104,28 @@ export function ProjectPage(): JSX.Element {
       )}
 
       <h3>Frequency report</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Phoneme</th>
-            <th>Configured</th>
-            <th>Observed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {frequencies.map((f) => (
-            <tr key={f.phonemeId}>
-              <td className="ipa">{f.phonemeId}</td>
-              <td>{(f.configured * 100).toFixed(1)}%</td>
-              <td>{(f.observed * 100).toFixed(1)}%</td>
+      {frequencies.length === 0 ? (
+        <p>Add phonemes on the Inventory page to see a frequency report.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Phoneme</th>
+              <th>Configured</th>
+              <th>Observed</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {frequencies.map((f) => (
+              <tr key={f.phonemeId}>
+                <td className="ipa">{f.phonemeId}</td>
+                <td className="mono-num">{(f.configured * 100).toFixed(1)}%</td>
+                <td className="mono-num">{(f.observed * 100).toFixed(1)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </section>
   );
 }

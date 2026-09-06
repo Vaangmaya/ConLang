@@ -363,3 +363,14 @@ select {
   color: var(--ink);
   opacity: 0.6;
 }
+
+/* Project page — the colophon (DESIGN.md §5.5) */
+
+.colophon {
+  max-width: 34rem;
+}
+
+.mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
