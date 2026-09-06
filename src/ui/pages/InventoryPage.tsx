@@ -1,10 +1,20 @@
 // Inventory page (DESIGN.md §5.1): consonant grid, vowel table, weights, romanization.
+// IPA chart cells are type specimens — feature details reveal on hover/focus,
+// arrow keys move between cells, selection is unmistakable.
 
-import { useMemo } from 'react';
-import type { Backness, Height, Manner, Place } from '../../core/features';
+import { useMemo, useState } from 'react';
+import type {
+  Backness,
+  ConsonantFeatures,
+  Height,
+  Manner,
+  Place,
+  VowelFeatures,
+} from '../../core/features';
 import type { Phoneme } from '../../core/phoneme';
 import { starterInventory } from '../../core/phoneme';
 import { findCollisions } from '../../core/romanization';
+import { useChartGrid, type ChartCoord } from '../hooks/useChartGrid';
 import { useWorkbenchStore } from '../state/store';
 
 const PLACES: Place[] = [
@@ -44,6 +54,29 @@ function longVariant(base: Phoneme): Phoneme {
   };
 }
 
+function describeConsonant(f: ConsonantFeatures): string {
+  return `${f.voiced ? 'voiced' : 'voiceless'} ${f.place} ${f.manner}`;
+}
+
+function describeVowel(f: VowelFeatures): string {
+  const parts = [f.height, f.backness];
+  if (f.rounded) parts.push('rounded');
+  if (f.long) parts.push('long');
+  return parts.join(' ');
+}
+
+function FeatureTags({ description }: { description: string }): JSX.Element {
+  return (
+    <>
+      {description.split(' ').map((word, i) => (
+        <span key={i} className="tag">
+          {word}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export function InventoryPage(): JSX.Element {
   const inventory = useWorkbenchStore((s) => s.project.inventory);
   const setInventory = useWorkbenchStore((s) => s.setInventory);
@@ -64,6 +97,46 @@ export function InventoryPage(): JSX.Element {
   );
 
   const collisions = useMemo(() => findCollisions(inventory), [inventory]);
+
+  const consonantMatrix = useMemo(
+    () =>
+      MANNERS.map((manner) =>
+        PLACES.map((place) =>
+          consonants
+            .filter(
+              (p) =>
+                p.features.kind === 'consonant' &&
+                p.features.place === place &&
+                p.features.manner === manner,
+            )
+            .map((p) => p.id),
+        ),
+      ),
+    [consonants],
+  );
+
+  const vowelMatrix = useMemo(
+    () =>
+      HEIGHTS.map((height) =>
+        BACKNESSES.map((backness) =>
+          vowels
+            .filter(
+              (p) =>
+                p.features.kind === 'vowel' &&
+                p.features.height === height &&
+                p.features.backness === backness,
+            )
+            .flatMap((base) => [base.id, longVariant(base).id]),
+        ),
+      ),
+    [vowels],
+  );
+
+  const consonantGrid = useChartGrid(consonantMatrix);
+  const vowelGrid = useChartGrid(vowelMatrix);
+
+  const [consonantDetail, setConsonantDetail] = useState<Phoneme | null>(null);
+  const [vowelDetail, setVowelDetail] = useState<Phoneme | null>(null);
 
   function togglePhoneme(base: Phoneme): void {
     if (selectedIds.has(base.id)) {
@@ -103,7 +176,7 @@ export function InventoryPage(): JSX.Element {
 
       {collisions.length > 0 && (
         <div className="warning-banner" role="alert">
-          <strong>Romanization collisions:</strong>
+          <strong>Romanization collisions — two phonemes would read the same:</strong>
           <ul>
             {collisions.map((c, i) => (
               <li key={i}>{c.detail}</li>
@@ -113,8 +186,18 @@ export function InventoryPage(): JSX.Element {
       )}
 
       <h3>Consonants</h3>
-      <div style={{ overflowX: 'auto' }}>
-        <table>
+      <p className="chart-detail" id="consonant-detail" aria-live="polite">
+        {consonantDetail && consonantDetail.features.kind === 'consonant' ? (
+          <>
+            <span className="ipa">{consonantDetail.ipa}</span>
+            <FeatureTags description={describeConsonant(consonantDetail.features)} />
+          </>
+        ) : (
+          'Hover or focus a consonant to see its features.'
+        )}
+      </p>
+      <div className="chart-wrap">
+        <table className="chart-table">
           <thead>
             <tr>
               <th>&nbsp;</th>
@@ -124,10 +207,10 @@ export function InventoryPage(): JSX.Element {
             </tr>
           </thead>
           <tbody>
-            {MANNERS.map((manner) => (
+            {MANNERS.map((manner, row) => (
               <tr key={manner}>
                 <th scope="row">{manner}</th>
-                {PLACES.map((place) => {
+                {PLACES.map((place, col) => {
                   const cell = consonants.filter(
                     (p) =>
                       p.features.kind === 'consonant' &&
@@ -135,23 +218,30 @@ export function InventoryPage(): JSX.Element {
                       p.features.manner === manner,
                   );
                   return (
-                    <td key={place}>
-                      {cell.map((p) => (
-                        <button
-                          key={p.id}
-                          type="button"
-                          className="ipa"
-                          aria-pressed={selectedIds.has(p.id)}
-                          style={{
-                            fontWeight: selectedIds.has(p.id) ? 'bold' : 'normal',
-                            background: selectedIds.has(p.id) ? '#dbe9ff' : undefined,
-                          }}
-                          onClick={() => togglePhoneme(p)}
-                          title={`${p.ipa} (${p.features.kind === 'consonant' && p.features.voiced ? 'voiced' : 'voiceless'} ${manner})`}
-                        >
-                          {p.ipa}
-                        </button>
-                      ))}
+                    <td key={place} className="chart-cell">
+                      {cell.map((p, slot) => {
+                        const coord: ChartCoord = { row, col, slot };
+                        return (
+                          <button
+                            key={p.id}
+                            ref={(el) => consonantGrid.registerRef(coord, el)}
+                            type="button"
+                            className="ipa specimen"
+                            aria-pressed={selectedIds.has(p.id)}
+                            aria-describedby="consonant-detail"
+                            tabIndex={consonantGrid.tabIndexFor(coord)}
+                            onClick={() => togglePhoneme(p)}
+                            onFocus={() => {
+                              consonantGrid.markActive(coord);
+                              setConsonantDetail(p);
+                            }}
+                            onMouseEnter={() => setConsonantDetail(p)}
+                            onKeyDown={(e) => consonantGrid.handleKeyDown(e, coord)}
+                          >
+                            {p.ipa}
+                          </button>
+                        );
+                      })}
                     </td>
                   );
                 })}
@@ -162,8 +252,18 @@ export function InventoryPage(): JSX.Element {
       </div>
 
       <h3>Vowels</h3>
-      <div style={{ overflowX: 'auto' }}>
-        <table>
+      <p className="chart-detail" id="vowel-detail" aria-live="polite">
+        {vowelDetail && vowelDetail.features.kind === 'vowel' ? (
+          <>
+            <span className="ipa">{vowelDetail.ipa}</span>
+            <FeatureTags description={describeVowel(vowelDetail.features)} />
+          </>
+        ) : (
+          'Hover or focus a vowel to see its features.'
+        )}
+      </p>
+      <div className="chart-wrap">
+        <table className="chart-table">
           <thead>
             <tr>
               <th>&nbsp;</th>
@@ -173,53 +273,48 @@ export function InventoryPage(): JSX.Element {
             </tr>
           </thead>
           <tbody>
-            {HEIGHTS.map((height) => (
+            {HEIGHTS.map((height, row) => (
               <tr key={height}>
                 <th scope="row">{height}</th>
-                {BACKNESSES.map((backness) => {
-                  const cell = vowels.filter(
+                {BACKNESSES.map((backness, col) => {
+                  const bases = vowels.filter(
                     (p) =>
                       p.features.kind === 'vowel' &&
                       p.features.height === height &&
                       p.features.backness === backness,
                   );
+                  if (bases.length === 0)
+                    return <td key={backness} className="chart-cell" />;
+                  const items = bases.flatMap((base) => [
+                    { phoneme: base, base },
+                    { phoneme: longVariant(base), base },
+                  ]);
                   return (
-                    <td key={backness}>
-                      {cell.map((p) => {
-                        const variant = longVariant(p);
+                    <td key={backness} className="chart-cell">
+                      {items.map(({ phoneme: p, base }, slot) => {
+                        const coord: ChartCoord = { row, col, slot };
+                        const isVariant = p.id !== base.id;
                         return (
-                          <span key={p.id} style={{ marginRight: '0.5rem' }}>
-                            <button
-                              type="button"
-                              className="ipa"
-                              aria-pressed={selectedIds.has(p.id)}
-                              style={{
-                                fontWeight: selectedIds.has(p.id) ? 'bold' : 'normal',
-                                background: selectedIds.has(p.id) ? '#dbe9ff' : undefined,
-                              }}
-                              onClick={() => togglePhoneme(p)}
-                              title={`${p.ipa} (${p.features.kind === 'vowel' && p.features.rounded ? 'rounded' : 'unrounded'})`}
-                            >
-                              {p.ipa}
-                            </button>
-                            <button
-                              type="button"
-                              className="ipa"
-                              aria-pressed={selectedIds.has(variant.id)}
-                              style={{
-                                fontWeight: selectedIds.has(variant.id)
-                                  ? 'bold'
-                                  : 'normal',
-                                background: selectedIds.has(variant.id)
-                                  ? '#dbe9ff'
-                                  : undefined,
-                              }}
-                              onClick={() => toggleLong(p)}
-                              title={`${variant.ipa} (long)`}
-                            >
-                              {variant.ipa}
-                            </button>
-                          </span>
+                          <button
+                            key={p.id}
+                            ref={(el) => vowelGrid.registerRef(coord, el)}
+                            type="button"
+                            className="ipa specimen"
+                            aria-pressed={selectedIds.has(p.id)}
+                            aria-describedby="vowel-detail"
+                            tabIndex={vowelGrid.tabIndexFor(coord)}
+                            onClick={() =>
+                              isVariant ? toggleLong(base) : togglePhoneme(base)
+                            }
+                            onFocus={() => {
+                              vowelGrid.markActive(coord);
+                              setVowelDetail(p);
+                            }}
+                            onMouseEnter={() => setVowelDetail(p)}
+                            onKeyDown={(e) => vowelGrid.handleKeyDown(e, coord)}
+                          >
+                            {p.ipa}
+                          </button>
                         );
                       })}
                     </td>
@@ -232,48 +327,54 @@ export function InventoryPage(): JSX.Element {
       </div>
 
       <h3>Selected phonemes ({inventory.phonemes.length})</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>IPA</th>
-            <th>Weight</th>
-            <th>Romanization</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {inventory.phonemes.map((p) => (
-            <tr key={p.id}>
-              <td className="ipa">{p.ipa}</td>
-              <td>
-                <input
-                  type="number"
-                  min={0.01}
-                  step={0.01}
-                  value={p.weight}
-                  onChange={(e) =>
-                    updatePhoneme(p.id, { weight: Number(e.target.value) || 0.01 })
-                  }
-                  style={{ width: '5rem' }}
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={p.romanization}
-                  onChange={(e) => updatePhoneme(p.id, { romanization: e.target.value })}
-                  style={{ width: '5rem' }}
-                />
-              </td>
-              <td>
-                <button type="button" onClick={() => removePhoneme(p.id)}>
-                  Remove
-                </button>
-              </td>
+      {inventory.phonemes.length === 0 ? (
+        <p>No phonemes yet — pick from the charts above to begin.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>IPA</th>
+              <th>Weight</th>
+              <th>Romanization</th>
+              <th>&nbsp;</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {inventory.phonemes.map((p) => (
+              <tr key={p.id}>
+                <td className="ipa">{p.ipa}</td>
+                <td>
+                  <input
+                    type="number"
+                    min={0.01}
+                    step={0.01}
+                    value={p.weight}
+                    onChange={(e) =>
+                      updatePhoneme(p.id, { weight: Number(e.target.value) || 0.01 })
+                    }
+                    style={{ width: '5rem' }}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    value={p.romanization}
+                    onChange={(e) =>
+                      updatePhoneme(p.id, { romanization: e.target.value })
+                    }
+                    style={{ width: '5rem' }}
+                  />
+                </td>
+                <td>
+                  <button type="button" onClick={() => removePhoneme(p.id)}>
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </section>
   );
 }
