@@ -20,16 +20,12 @@ export function App(): JSX.Element {
   return (
     <main>
       <h1>Conlang Workbench</h1>
-      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+      <nav className="app-nav">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             aria-current={activeTab === tab.id}
-            style={{
-              fontWeight: activeTab === tab.id ? 'bold' : 'normal',
-              background: activeTab === tab.id ? '#dbe9ff' : undefined,
-            }}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
