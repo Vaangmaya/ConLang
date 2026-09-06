@@ -107,7 +107,7 @@ function ClassEditor({ classes, inventory, onChange }: ClassEditorProps): JSX.El
         <div
           key={i}
           style={{
-            border: '1px solid var(--color-border)',
+            border: '1px solid var(--rule)',
             padding: '0.5rem',
             marginBottom: '0.5rem',
           }}
@@ -151,9 +151,8 @@ function ClassEditor({ classes, inventory, onChange }: ClassEditorProps): JSX.El
                 <button
                   key={p.id}
                   type="button"
-                  className="ipa"
+                  className="ipa specimen"
                   aria-pressed={active}
-                  style={{ background: active ? '#dbe9ff' : undefined }}
                   onClick={() =>
                     updateAt(i, {
                       ...cls,
@@ -368,7 +367,7 @@ function ConstraintEditor({
   return (
     <div
       style={{
-        border: '1px solid var(--color-border)',
+        border: '1px solid var(--rule)',
         padding: '0.5rem',
         marginBottom: '0.5rem',
       }}
@@ -607,6 +606,7 @@ export function PhonotacticsPage(): JSX.Element {
   const [previewSeed, setPreviewSeed] = useState(1);
   const [addConstraintType, setAddConstraintType] =
     useState<Constraint['type']>('RequiredOnset');
+  const [previewGeneration, setPreviewGeneration] = useState(0);
 
   const knownClasses = useMemo(
     () => Array.from(new Set([...grammar.classes.map((c) => c.symbol), 'C', 'V'])),
@@ -619,74 +619,109 @@ export function PhonotacticsPage(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grammar, inventory, previewSeed]);
 
+  // Bump on every successful preview so the stage below remounts and its
+  // materialize animation replays — the one orchestrated re-render in this design.
+  useEffect(() => {
+    if (preview && !preview.error) setPreviewGeneration((g) => g + 1);
+  }, [preview]);
+
   return (
     <section aria-label="Phonotactics">
       <h2>Phonotactics</h2>
 
-      <h3>Classes</h3>
-      <ClassEditor
-        classes={grammar.classes}
-        inventory={inventory}
-        onChange={setClasses}
-      />
+      <div className="phonotactics-layout">
+        <div className="editor-rail">
+          <h3>Classes</h3>
+          <ClassEditor
+            classes={grammar.classes}
+            inventory={inventory}
+            onChange={setClasses}
+          />
 
-      <h3>Syllable templates</h3>
-      <TemplateEditor
-        templates={grammar.templates}
-        knownClasses={knownClasses}
-        projectVersion={projectVersion}
-        onCommit={setTemplates}
-      />
+          <h3>Syllable templates</h3>
+          <TemplateEditor
+            templates={grammar.templates}
+            knownClasses={knownClasses}
+            projectVersion={projectVersion}
+            onCommit={setTemplates}
+          />
 
-      <h3>Syllable count</h3>
-      <SyllableCountEditor value={grammar.syllableCount} onChange={setSyllableCount} />
+          <h3>Syllable count</h3>
+          <SyllableCountEditor
+            value={grammar.syllableCount}
+            onChange={setSyllableCount}
+          />
 
-      <h3>Constraints</h3>
-      {grammar.constraints.map((c, i) => (
-        <ConstraintEditor
-          key={i}
-          constraint={c}
-          inventory={inventory}
-          onChange={(next) =>
-            setConstraints(grammar.constraints.map((c2, idx) => (idx === i ? next : c2)))
-          }
-          onRemove={() =>
-            setConstraints(grammar.constraints.filter((_, idx) => idx !== i))
-          }
-        />
-      ))}
-      <label>
-        <select
-          value={addConstraintType}
-          onChange={(e) => setAddConstraintType(e.target.value as Constraint['type'])}
-        >
-          <option value="RequiredOnset">Required onset</option>
-          <option value="BannedSequence">Banned sequence</option>
-          <option value="Sonority">Sonority</option>
-          <option value="VowelHarmony">Vowel harmony</option>
-        </select>
-      </label>
-      <button
-        type="button"
-        style={{ marginLeft: '0.5rem' }}
-        onClick={() =>
-          setConstraints([
-            ...grammar.constraints,
-            defaultConstraint(addConstraintType, inventory),
-          ])
-        }
-      >
-        Add constraint
-      </button>
+          <h3>Constraints</h3>
+          {grammar.constraints.map((c, i) => (
+            <ConstraintEditor
+              key={i}
+              constraint={c}
+              inventory={inventory}
+              onChange={(next) =>
+                setConstraints(
+                  grammar.constraints.map((c2, idx) => (idx === i ? next : c2)),
+                )
+              }
+              onRemove={() =>
+                setConstraints(grammar.constraints.filter((_, idx) => idx !== i))
+              }
+            />
+          ))}
+          <label>
+            <select
+              value={addConstraintType}
+              onChange={(e) => setAddConstraintType(e.target.value as Constraint['type'])}
+            >
+              <option value="RequiredOnset">Required onset</option>
+              <option value="BannedSequence">Banned sequence</option>
+              <option value="Sonority">Sonority</option>
+              <option value="VowelHarmony">Vowel harmony</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            style={{ marginLeft: '0.5rem' }}
+            onClick={() =>
+              setConstraints([
+                ...grammar.constraints,
+                defaultConstraint(addConstraintType, inventory),
+              ])
+            }
+          >
+            Add constraint
+          </button>
+        </div>
 
-      <h3>Live preview</h3>
-      <button type="button" onClick={() => setPreviewSeed(randomSeed())}>
-        Reroll preview
-      </button>
-      {preview?.error && <div className="warning-banner">{preview.error}</div>}
-      {preview && !preview.error && (
-        <>
-          {preview.diagnostics.rejectedWords > 0 && (
+        <div className="preview-panel">
+          <h3>Live preview</h3>
+          <div className="preview-stage" key={previewGeneration}>
+            {grammar.templates.length === 0 ? (
+              <p className="preview-placeholder">
+                No syllable templates yet — add one at left (try{' '}
+                <span className="ipa">CV</span>) and sample words will start appearing
+                here.
+              </p>
+            ) : preview?.error ? (
+              <p className="preview-placeholder">{preview.error}</p>
+            ) : preview ? (
+              <ul className="preview-words">
+                {preview.words.map((w, i) => (
+                  <li
+                    key={i}
+                    className="ipa preview-word"
+                    style={{ animationDelay: `${i * 35}ms` }}
+                  >
+                    {render(w.phonemeIds, inventory)}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="preview-placeholder">Generating…</p>
+            )}
+          </div>
+
+          {preview && !preview.error && preview.diagnostics.rejectedWords > 0 && (
             <div className="warning-banner" role="alert">
               Your grammar looks unsatisfiable — {preview.diagnostics.rejectedWords} of
               the requested preview words couldn't be generated.
@@ -699,18 +734,14 @@ export function PhonotacticsPage(): JSX.Element {
               </ul>
             </div>
           )}
-          <ul>
-            {preview.words.map((w, i) => (
-              <li key={i} className="ipa">
-                {render(w.phonemeIds, inventory)}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      {!preview && !preview?.error && (
-        <p>Add at least one syllable template to see a preview.</p>
-      )}
+
+          <div className="preview-meta">
+            <button type="button" onClick={() => setPreviewSeed(randomSeed())}>
+              Reroll preview
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

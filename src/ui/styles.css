@@ -147,6 +147,84 @@ select {
   margin: 0 0 var(--space-3);
 }
 
+/* Phonotactics page — quiet editor rail, hero live preview (DESIGN.md §5.2) */
+
+.phonotactics-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  align-items: start;
+  gap: var(--space-8);
+}
+
+@media (max-width: 900px) {
+  .phonotactics-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editor-rail h3 {
+  font-size: 0.9375rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--space-1);
+  margin-top: var(--space-6);
+}
+
+.editor-rail h3:first-child {
+  margin-top: 0;
+}
+
+.preview-stage {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--space-8);
+  min-height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-words {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4) var(--space-6);
+}
+
+.preview-word {
+  font-size: var(--text-hero);
+  line-height: 1.2;
+  animation: materialize var(--motion-hero) both;
+}
+
+@keyframes materialize {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.preview-placeholder {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.preview-meta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+
 .chart-detail .ipa {
   font-size: var(--text-inline);
   margin-right: var(--space-2);
