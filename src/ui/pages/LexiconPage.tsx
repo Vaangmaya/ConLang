@@ -1,16 +1,61 @@
-// Lexicon page (DESIGN.md §5.3): generate N words, sortable table, reroll,
-// delete, export, unsatisfiability diagnostic banner.
+// Lexicon page (DESIGN.md §5.3): generate N words, sortable dictionary-style
+// rows (virtualized for up to 5,000 entries), reroll, delete, export.
 
 import { useMemo, useState } from 'react';
-import { exportLexiconCsv, exportLexiconJson } from '../../core/project';
-import { render } from '../../core/romanization';
+import { FixedSizeList, type ListChildComponentProps } from 'react-window';
+import { exportLexiconCsv, exportLexiconJson, lexiconToRows } from '../../core/project';
 import { downloadTextFile } from '../download';
 import { randomSeed, useWorkbenchStore } from '../state/store';
 
 const MAX_WORDS = 5000;
+const ROW_HEIGHT = 44;
+const LIST_HEIGHT = 520;
 
 type SortColumn = 'ipa' | 'romanization' | 'syllables';
 type SortDirection = 'asc' | 'desc';
+
+interface Row {
+  index: number;
+  ipa: string;
+  romanization: string;
+  syllables: number;
+}
+
+interface RowData {
+  rows: Row[];
+  onReroll: (index: number) => void;
+  onDelete: (index: number) => void;
+}
+
+function LexiconRow({
+  index,
+  style,
+  data,
+}: ListChildComponentProps<RowData>): JSX.Element {
+  const row = data.rows[index]!;
+  return (
+    <div className="lexicon-row" style={style}>
+      <span className="ipa lexicon-headword">{row.romanization}</span>
+      <span className="ipa lexicon-pron">/{row.ipa}/</span>
+      <span className="lexicon-syllables">
+        {row.syllables} syll{row.syllables === 1 ? '' : '.'}
+      </span>
+      <span className="lexicon-actions">
+        <button type="button" onClick={() => data.onReroll(row.index)}>
+          Reroll
+        </button>
+        <button type="button" onClick={() => data.onDelete(row.index)}>
+          Delete
+        </button>
+      </span>
+    </div>
+  );
+}
+
+function sortIndicator(active: boolean, direction: SortDirection): string {
+  if (!active) return '';
+  return direction === 'asc' ? ' ▲' : ' ▼';
+}
 
 export function LexiconPage(): JSX.Element {
   const project = useWorkbenchStore((s) => s.project);
@@ -22,18 +67,16 @@ export function LexiconPage(): JSX.Element {
 
   const [n, setN] = useState(100);
   const [seed, setSeed] = useState(1);
-  const [sortColumn, setSortColumn] = useState<SortColumn>('ipa');
+  const [sortColumn, setSortColumn] = useState<SortColumn>('romanization');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  const rows = useMemo(
+  const rows: Row[] = useMemo(
     () =>
-      project.lexicon.map((word, index) => ({
+      lexiconToRows(project.lexicon, project.inventory).map((row, index) => ({
         index,
-        ipa: word.phonemeIds
-          .map((id) => project.inventory.phonemes.find((p) => p.id === id)?.ipa ?? id)
-          .join(''),
-        romanization: render(word.phonemeIds, project.inventory),
-        syllables: word.syllableBreaks.length,
+        ipa: row.ipa,
+        romanization: row.romanized,
+        syllables: row.syllables,
       })),
     [project.lexicon, project.inventory],
   );
@@ -65,40 +108,48 @@ export function LexiconPage(): JSX.Element {
     generateLexicon(Math.min(Math.max(1, Math.floor(n)), MAX_WORDS), seed);
   }
 
+  const rowData: RowData = {
+    rows: sortedRows,
+    onReroll: (index) => rerollWord(index, randomSeed()),
+    onDelete: (index) => deleteWord(index),
+  };
+
   return (
     <section aria-label="Lexicon">
       <h2>Lexicon</h2>
 
-      <label>
-        Words to generate:{' '}
-        <input
-          type="number"
-          min={1}
-          max={MAX_WORDS}
-          value={n}
-          onChange={(e) => setN(Number(e.target.value) || 1)}
-          style={{ width: '6rem' }}
-        />
-      </label>
-      <label style={{ marginLeft: '1rem' }}>
-        Seed:{' '}
-        <input
-          type="number"
-          value={seed}
-          onChange={(e) => setSeed(Number(e.target.value) || 0)}
-          style={{ width: '8rem' }}
-        />
-      </label>
-      <button type="button" style={{ marginLeft: '1rem' }} onClick={handleGenerate}>
-        Generate
-      </button>
-      <button
-        type="button"
-        style={{ marginLeft: '0.5rem' }}
-        onClick={() => setSeed(randomSeed())}
-      >
-        Random seed
-      </button>
+      <div className="lexicon-controls">
+        <label>
+          Words to generate:{' '}
+          <input
+            type="number"
+            min={1}
+            max={MAX_WORDS}
+            value={n}
+            onChange={(e) => setN(Number(e.target.value) || 1)}
+            style={{ width: '6rem' }}
+          />
+        </label>
+        <label style={{ marginLeft: '1rem' }}>
+          Seed:{' '}
+          <input
+            type="number"
+            value={seed}
+            onChange={(e) => setSeed(Number(e.target.value) || 0)}
+            style={{ width: '8rem' }}
+          />
+        </label>
+        <button type="button" style={{ marginLeft: '1rem' }} onClick={handleGenerate}>
+          Generate
+        </button>
+        <button
+          type="button"
+          style={{ marginLeft: '0.5rem' }}
+          onClick={() => setSeed(randomSeed())}
+        >
+          Random seed
+        </button>
+      </div>
 
       {lexiconError && (
         <div className="warning-banner" role="alert">
@@ -119,84 +170,64 @@ export function LexiconPage(): JSX.Element {
         </div>
       )}
 
-      <div style={{ margin: '0.5rem 0' }}>
-        <button
-          type="button"
-          onClick={() =>
-            downloadTextFile(
-              'lexicon.csv',
-              exportLexiconCsv(project.lexicon, project.inventory),
-              'text/csv',
-            )
-          }
-        >
-          Export CSV
-        </button>
-        <button
-          type="button"
-          style={{ marginLeft: '0.5rem' }}
-          onClick={() =>
-            downloadTextFile(
-              'lexicon.json',
-              exportLexiconJson(project.lexicon, project.inventory),
-              'application/json',
-            )
-          }
-        >
-          Export JSON
-        </button>
-      </div>
+      {project.lexicon.length === 0 ? (
+        <p>No words yet — set a count and seed above, then Generate.</p>
+      ) : (
+        <>
+          <div className="lexicon-controls" style={{ marginTop: '0.5rem' }}>
+            <button
+              type="button"
+              onClick={() =>
+                downloadTextFile(
+                  'lexicon.csv',
+                  exportLexiconCsv(project.lexicon, project.inventory),
+                  'text/csv',
+                )
+              }
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              style={{ marginLeft: '0.5rem' }}
+              onClick={() =>
+                downloadTextFile(
+                  'lexicon.json',
+                  exportLexiconJson(project.lexicon, project.inventory),
+                  'application/json',
+                )
+              }
+            >
+              Export JSON
+            </button>
+            <span className="lexicon-count">{project.lexicon.length} word(s)</span>
+          </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <button type="button" onClick={() => handleSort('ipa')}>
-                IPA {sortColumn === 'ipa' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
-              </button>
-            </th>
-            <th>
-              <button type="button" onClick={() => handleSort('romanization')}>
-                Romanization{' '}
-                {sortColumn === 'romanization'
-                  ? sortDirection === 'asc'
-                    ? '▲'
-                    : '▼'
-                  : ''}
-              </button>
-            </th>
-            <th>
-              <button type="button" onClick={() => handleSort('syllables')}>
-                Syllables{' '}
-                {sortColumn === 'syllables' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
-              </button>
-            </th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRows.map((row) => (
-            <tr key={row.index}>
-              <td className="ipa">{row.ipa}</td>
-              <td>{row.romanization}</td>
-              <td>{row.syllables}</td>
-              <td>
-                <button type="button" onClick={() => rerollWord(row.index, randomSeed())}>
-                  Reroll
-                </button>
-                <button
-                  type="button"
-                  style={{ marginLeft: '0.5rem' }}
-                  onClick={() => deleteWord(row.index)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <p>{project.lexicon.length} word(s)</p>
+          <div className="lexicon-grid-row lexicon-header">
+            <button type="button" onClick={() => handleSort('romanization')}>
+              Romanization{sortIndicator(sortColumn === 'romanization', sortDirection)}
+            </button>
+            <button type="button" onClick={() => handleSort('ipa')}>
+              IPA{sortIndicator(sortColumn === 'ipa', sortDirection)}
+            </button>
+            <button type="button" onClick={() => handleSort('syllables')}>
+              Syllables{sortIndicator(sortColumn === 'syllables', sortDirection)}
+            </button>
+            <span>&nbsp;</span>
+          </div>
+
+          <FixedSizeList
+            height={LIST_HEIGHT}
+            width="100%"
+            itemCount={sortedRows.length}
+            itemSize={ROW_HEIGHT}
+            itemData={rowData}
+            className="lexicon-list"
+          >
+            {LexiconRow}
+          </FixedSizeList>
+        </>
+      )}
     </section>
   );
 }
