@@ -72,7 +72,7 @@ DESIGN.md §5.6–§5.8. A newcomer needs a way in.
 - [x] Home landing page (opens here; "Enter the workbench" CTA, staggered reveal)
 - [x] Learn primer (four sections, each with further-reading links)
 - [x] Restyle the five tool pages onto the editorial system + `.page-intro` hints
-- [ ] `index.html` metadata + favicon
+- [x] `index.html` metadata + favicon
 
 ## Phase 6 — Ship
 
