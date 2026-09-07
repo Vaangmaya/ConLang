@@ -8,6 +8,7 @@ import { parseRule, type SoundChangeRule } from '../../core/soundchange/parser';
 import { Button } from '../components/Button';
 import { cx } from '../components/classNames';
 import { Field } from '../components/Field';
+import { PageIntro } from '../components/PageIntro';
 import { Table } from '../components/Table';
 import { useWorkbenchStore } from '../state/store';
 
@@ -142,6 +143,10 @@ export function SoundChangesPage(): JSX.Element {
   return (
     <section aria-label="Sound Changes">
       <h2>Sound Changes</h2>
+      <PageIntro>
+        Apply ordered rules across the lexicon to evolve a daughter language, with a full
+        derivation for every word.
+      </PageIntro>
 
       <h3>Rules (applied in order)</h3>
       <Table label="Sound change rules" className="rules-table">

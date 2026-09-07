@@ -6,6 +6,7 @@ import { serializeProject } from '../../core/project';
 import { frequencyReport } from '../../core/stats';
 import { Button } from '../components/Button';
 import { Field } from '../components/Field';
+import { PageIntro } from '../components/PageIntro';
 import { Table } from '../components/Table';
 import { downloadTextFile } from '../download';
 import { useWorkbenchStore } from '../state/store';
@@ -54,6 +55,10 @@ export function ProjectPage(): JSX.Element {
   return (
     <section aria-label="Project" className="colophon">
       <h2>Project</h2>
+      <PageIntro>
+        Save the language to a file, load one back, and see how closely the generated
+        frequencies track your weights.
+      </PageIntro>
 
       <Field label="Name" inline>
         <input

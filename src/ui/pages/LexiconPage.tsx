@@ -4,6 +4,7 @@
 import { useMemo, useState } from 'react';
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 import { exportLexiconCsv, exportLexiconJson, lexiconToRows } from '../../core/project';
+import { PageIntro } from '../components/PageIntro';
 import { downloadTextFile } from '../download';
 import { randomSeed, useWorkbenchStore } from '../state/store';
 
@@ -117,6 +118,10 @@ export function LexiconPage(): JSX.Element {
   return (
     <section aria-label="Lexicon">
       <h2>Lexicon</h2>
+      <PageIntro>
+        Generate a seeded vocabulary that obeys the grammar, then sort, reroll, and export
+        it.
+      </PageIntro>
 
       <div className="lexicon-controls">
         <label>

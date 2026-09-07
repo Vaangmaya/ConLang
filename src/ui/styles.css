@@ -244,6 +244,27 @@ select {
   margin-bottom: var(--space-4);
 }
 
+/* Tool pages — shared editorial header (DESIGN.md §5.1–§5.5) */
+
+main > section > h2 {
+  font-size: var(--text-hero);
+  margin-bottom: var(--space-8);
+}
+
+main > section > h2::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 3px;
+  margin-top: var(--space-3);
+  background: var(--accent);
+}
+
+main > section > h3 {
+  font-size: var(--text-title);
+  margin-top: var(--space-8);
+}
+
 /* Inventory page — IPA type specimens (DESIGN.md §5.1) */
 
 .chart-wrap {
@@ -264,7 +285,7 @@ select {
   font-size: var(--text-tag);
   font-variant-caps: small-caps;
   font-weight: 500;
-  background: var(--surface);
+  background: var(--surface-2);
   white-space: nowrap;
 }
 
@@ -294,7 +315,7 @@ select {
 }
 
 .specimen:hover {
-  background: var(--surface);
+  background: var(--surface-2);
 }
 
 .specimen[aria-pressed='true'] {
@@ -328,10 +349,10 @@ select {
 }
 
 .editor-rail h3 {
-  font-size: 0.9375rem;
+  font-size: var(--text-headword);
   border-bottom: 1px solid var(--rule);
-  padding-bottom: var(--space-1);
-  margin-top: var(--space-6);
+  padding-bottom: var(--space-2);
+  margin-top: var(--space-8);
 }
 
 .editor-rail h3:first-child {
@@ -340,6 +361,7 @@ select {
 
 .preview-stage {
   background: var(--surface);
+  border-top: 3px solid var(--accent);
   border-radius: var(--radius);
   padding: var(--space-8);
   min-height: 18rem;
@@ -459,7 +481,7 @@ select {
 .lexicon-header {
   border: 1px solid var(--rule);
   border-bottom: none;
-  background: var(--surface);
+  background: var(--surface-2);
 }
 
 .lexicon-header button {
@@ -475,6 +497,7 @@ select {
 
 .lexicon-list {
   border: 1px solid var(--rule);
+  background: var(--surface);
 }
 
 .lexicon-row {

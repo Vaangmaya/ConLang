@@ -15,6 +15,7 @@ import type { Phoneme } from '../../core/phoneme';
 import { starterInventory } from '../../core/phoneme';
 import { findCollisions } from '../../core/romanization';
 import { Button } from '../components/Button';
+import { PageIntro } from '../components/PageIntro';
 import { Table } from '../components/Table';
 import { useChartGrid, type ChartCoord } from '../hooks/useChartGrid';
 import { useWorkbenchStore } from '../state/store';
@@ -175,6 +176,10 @@ export function InventoryPage(): JSX.Element {
   return (
     <section aria-label="Inventory">
       <h2>Inventory</h2>
+      <PageIntro>
+        Choose the consonants and vowels your language contrasts — each becomes a feature
+        bundle the rest of the grammar can reason about.
+      </PageIntro>
 
       {collisions.length > 0 && (
         <div className="warning-banner" role="alert">

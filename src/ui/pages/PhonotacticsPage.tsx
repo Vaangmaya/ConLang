@@ -17,6 +17,7 @@ import { render } from '../../core/romanization';
 import { parseTemplate, type TemplateParseResult } from '../../core/template/parser';
 import { Button } from '../components/Button';
 import { Field } from '../components/Field';
+import { PageIntro } from '../components/PageIntro';
 import { Panel } from '../components/Panel';
 import { randomSeed, useWorkbenchStore } from '../state/store';
 
@@ -603,6 +604,10 @@ export function PhonotacticsPage(): JSX.Element {
   return (
     <section aria-label="Phonotactics">
       <h2>Phonotactics</h2>
+      <PageIntro>
+        Describe how syllables are built — classes, templates, and constraints — with ten
+        sample words regenerating as you type.
+      </PageIntro>
 
       <div className="phonotactics-layout">
         <div className="editor-rail">
