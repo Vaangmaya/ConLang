@@ -87,6 +87,120 @@ select {
   margin-left: var(--space-1);
 }
 
+/* Shared UI primitives — Button / Field / Panel / Table (DESIGN.md §5.6) */
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: none;
+  transition: background var(--motion-fast);
+}
+
+.btn--ghost:hover {
+  background: var(--surface);
+}
+
+.btn--danger {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-block: var(--space-2);
+}
+
+.field--inline {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.field-label {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.field-hint {
+  font-size: 0.8125rem;
+  opacity: 0.6;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.num-input {
+  width: 5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.panel-title {
+  font-weight: 600;
+}
+
+.panel-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ptable {
+  width: 100%;
+}
+
+.ptable th {
+  background: var(--surface);
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ptable-scroll {
+  overflow-x: auto;
+  margin-bottom: var(--space-4);
+}
+
 /* Inventory page — IPA type specimens (DESIGN.md §5.1) */
 
 .chart-wrap {

@@ -231,15 +231,51 @@ Default phoneme weights follow the Gusein-Zade distribution over a class of n ph
 
 ## 5. UI specification
 
-Five pages, one shared store (zustand). The store holds a single `Project` plus UI state; every mutation delegates to a pure `core` function. Components never re-implement core logic.
+Five pages, one shared store (zustand). The store holds a single `Project` plus UI state; every mutation delegates to a pure `core` function. Components never re-implement core logic. The five subsections below are numbered §5.1–§5.5 in page order; `src/ui/styles.css` is organised into matching per-page section blocks, each headed `/* … (DESIGN.md §5.x) */`.
 
-1. **Inventory** — consonant grid (place × manner, voiced/voiceless pairs per cell) and vowel table (height × backness, rounded/long toggles); click to add/remove; per-phoneme weight slider and romanization field; live collision warnings from §4.2.
-2. **Phonotactics** — class editor (symbol → member picker); template list with per-template weight and inline parse errors; constraint builder (forms per §4.5 type); syllable-count sliders; a live preview panel showing 10 sample words, regenerated (debounced 300 ms) on any grammar edit — this live feedback is the heart of the UX.
-3. **Lexicon** — "Generate N words" (N ≤ 5,000) with seed field; sortable table (IPA, romanization, syllable count); per-row reroll; delete; export buttons; the unsatisfiability diagnostic banner surfaces here and in Phonotactics.
-4. **Sound Changes** — ordered rule list (add/edit/enable/disable/reorder with drag handles); inline rule-parse errors; a before → after diff table over the lexicon; click a word to expand its full derivation trace; "fork daughter language" button clones the project with the output lexicon.
-5. **Project** — name, save/download, load/import (with zod error display), reset, and the frequency report from §4.9.
+### 5.1 Inventory
+
+Consonant grid (place × manner, voiced/voiceless pairs per cell) and vowel table (height × backness, rounded/long toggles); click to add/remove; per-phoneme weight slider and romanization field; live collision warnings from §4.2.
+
+### 5.2 Phonotactics
+
+Class editor (symbol → member picker); template list with per-template weight and inline parse errors; constraint builder (forms per §4.5 type); syllable-count sliders; a live preview panel showing 10 sample words, regenerated (debounced 300 ms) on any grammar edit — this live feedback is the heart of the UX.
+
+### 5.3 Lexicon
+
+"Generate N words" (N ≤ 5,000) with seed field; sortable table (IPA, romanization, syllable count); per-row reroll; delete; export buttons; the unsatisfiability diagnostic banner surfaces here and in Phonotactics.
+
+### 5.4 Sound Changes
+
+Ordered rule list (add/edit/enable/disable/reorder with drag handles); inline rule-parse errors; a before → after diff table over the lexicon; click a word to expand its full derivation trace; "fork daughter language" button clones the project with the output lexicon.
+
+### 5.5 Project
+
+Name, save/download, load/import (with zod error display), reset, and the frequency report from §4.9.
 
 IPA rendering: bundle Charis SIL (or Noto Sans) via `@font-face`; do not rely on system fonts.
+
+### 5.6 Visual design system
+
+The visual language was added after the pages were first wired to core; §5.1–§5.5 above correspond to the five pages in order, and `styles.css` follows the same order.
+
+**Tokens.** `src/ui/theme.css` is the single source of truth — one `:root` block, no dark mode:
+
+- _Palette_ — `--ink` / `--paper` / `--surface` / `--rule` (a warm-grey "paper" ground), a navy `--accent` (+ `--accent-ink`), and a rust `--signal` (+ `--signal-bg`) for warnings and errors.
+- _Type_ — three stacks: `--font-ui` (`system-ui`), `--font-mono`, and `--font-conlang` (`'Charis SIL'` → the bundled `'Noto Sans IPA'` webfont). Every piece of conlang data renders in `--font-conlang` via `.ipa`; the two UI faces stay quiet and recede. Four sizes only: `--text-hero` / `--text-headword` / `--text-inline` / `--text-tag`.
+- _Spacing_ — `--space-1/2/3/4/6/8` (deliberately no 5 or 7). `--radius: 3px`.
+- _Motion_ — `--motion-fast` (120 ms, feedback only) and `--motion-hero` (420 ms). The Phonotactics live-preview `materialize` replay on `.preview-stage` is the one orchestrated animation; motion everywhere else is feedback-speed at most. A global `prefers-reduced-motion: reduce` rule cuts all of it.
+
+**Primitives.** `src/ui/components/` (reserved in §2) holds four intentionally minimal, token-driven, prop-forwarding components — no config-object table API:
+
+- `Button` — emits `.btn` plus an optional `.btn--primary` / `.btn--ghost` / `.btn--danger`.
+- `Field` — a real `<label htmlFor>` bound to one control (`.field`, `.field--inline`, `.field-label`, `.field-hint`); reuses `.error-text`. Checkboxes keep the native wrapping label (`.checkbox`).
+- `Panel` — the bordered editor card (`.panel`, `.panel-head`, `.panel-title`, `.panel-actions`).
+- `Table` — `<table class="ptable">` optionally inside `.ptable-scroll`; callers keep native table markup.
+
+Shared form utilities live alongside: `.btn-row`, `.field-row`, `.num-input`.
+
+**Where styles live.** The element resets plus `.ipa` / `.tag` / `.warning-banner` / `.error-text` and the primitives block are shared, at the top of `styles.css`; everything else sits in the per-page block headed `/* … (DESIGN.md §5.x) */`.
 
 ## 6. Testing strategy
 
