@@ -1,0 +1,908 @@
+@import './theme.css';
+@import './assets/fonts/fonts.css';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--paper);
+  /* Atmosphere: two soft glows on the ink ground (rgba mirrors --accent and
+     --accent-2 so the page has depth without an image asset). */
+  background-image:
+    radial-gradient(80vw 60vh at 8% -5%, rgba(226, 85, 61, 0.1), transparent 60%),
+    radial-gradient(70vw 52vh at 100% 100%, rgba(47, 111, 106, 0.08), transparent 55%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-4);
+}
+
+.ipa {
+  font-family: var(--font-conlang);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--rule);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+input,
+select {
+  font: inherit;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.warning-banner {
+  background: var(--signal-bg);
+  color: var(--signal);
+  border: 1px solid var(--signal);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  margin-block: var(--space-2);
+}
+
+.error-text {
+  color: var(--signal);
+  font-size: 0.85rem;
+}
+
+/* Leipzig-style feature/gloss abbreviations: real small caps, the one
+   licensed exception to "no tracked all-caps labels" in this design. */
+.tag {
+  font-variant-caps: small-caps;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--text-tag);
+}
+
+.tag + .tag {
+  margin-left: var(--space-1);
+}
+
+/* Contextual one-liner under each tool page's <h2>, with a link into Learn. */
+.page-intro {
+  max-width: 46rem;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-8);
+  color: var(--muted);
+  font-size: var(--text-inline);
+}
+
+.page-intro button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font: inherit;
+}
+
+.page-intro button:hover {
+  color: var(--accent-hi);
+}
+
+/* Long-form editorial prose scaffold (Learn page fills in the rest). */
+.prose {
+  max-width: 34rem;
+  font-size: var(--text-inline);
+  line-height: 1.7;
+}
+
+.prose p {
+  margin: 0 0 var(--space-4);
+}
+
+/* Shared UI primitives — Button / Field / Panel / Table (DESIGN.md §5.6) */
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: none;
+  transition: background var(--motion-fast);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-2);
+}
+
+.btn--danger {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-block: var(--space-2);
+}
+
+.field--inline {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.field-label {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.field-hint {
+  font-size: 0.8125rem;
+  opacity: 0.6;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.num-input {
+  width: 5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel {
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.panel-title {
+  font-weight: 600;
+}
+
+.panel-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ptable {
+  width: 100%;
+}
+
+.ptable th {
+  background: var(--surface-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ptable-scroll {
+  overflow-x: auto;
+  margin-bottom: var(--space-4);
+}
+
+/* Tool pages — shared editorial header (DESIGN.md §5.1–§5.5) */
+
+main > section > h2 {
+  font-size: var(--text-hero);
+  margin-bottom: var(--space-8);
+}
+
+main > section > h2::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 3px;
+  margin-top: var(--space-3);
+  background: var(--accent);
+}
+
+main > section > h3 {
+  font-size: var(--text-title);
+  margin-top: var(--space-8);
+}
+
+/* Inventory page — IPA type specimens (DESIGN.md §5.1) */
+
+.chart-wrap {
+  overflow-x: auto;
+  margin-bottom: var(--space-4);
+}
+
+.selected-table {
+  max-width: 32rem;
+}
+
+.roman-input {
+  width: 5rem;
+}
+
+.chart-table th {
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  font-weight: 500;
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+
+.chart-cell {
+  vertical-align: top;
+  padding: var(--space-1);
+}
+
+.specimen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  margin: 2px;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-conlang);
+  font-size: var(--text-headword);
+  line-height: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition:
+    background var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast);
+}
+
+.specimen:hover {
+  background: var(--surface-2);
+}
+
+.specimen[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.chart-detail {
+  min-height: 1.5em;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink);
+  margin: 0 0 var(--space-3);
+}
+
+/* Phonotactics page — quiet editor rail, hero live preview (DESIGN.md §5.2) */
+
+.phonotactics-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  align-items: start;
+  gap: var(--space-8);
+}
+
+@media (max-width: 900px) {
+  .phonotactics-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editor-rail h3 {
+  font-size: var(--text-headword);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--space-2);
+  margin-top: var(--space-8);
+}
+
+.editor-rail h3:first-child {
+  margin-top: 0;
+}
+
+.preview-stage {
+  background: var(--surface);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--space-8);
+  min-height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-words {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4) var(--space-6);
+}
+
+.preview-word {
+  font-size: var(--text-hero);
+  line-height: 1.2;
+  animation: materialize var(--motion-hero) both;
+}
+
+@keyframes materialize {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.preview-placeholder {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.preview-meta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-3);
+}
+
+.chart-detail .ipa {
+  font-size: var(--text-inline);
+  margin-right: var(--space-2);
+}
+
+/* The live preview is the heart of the UX — keep it in view while the rail scrolls. */
+.preview-panel {
+  position: sticky;
+  top: var(--space-6);
+  align-self: start;
+}
+
+.member-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.symbol-input {
+  width: 2rem;
+  text-transform: uppercase;
+}
+
+.template-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.template-row .error-text {
+  flex-basis: 100%;
+}
+
+.template-input,
+.seq-input {
+  width: 10rem;
+}
+
+/* Lexicon page — dictionary entries, virtualized (DESIGN.md §5.3) */
+
+.lexicon-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: var(--space-2) 0;
+}
+
+.lexicon-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.lexicon-grid-row {
+  display: grid;
+  grid-template-columns: 1fr 10rem 6rem 10rem;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+}
+
+.lexicon-header {
+  border: 1px solid var(--rule);
+  border-bottom: none;
+  background: var(--surface-2);
+}
+
+.lexicon-header button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  font-weight: 500;
+  text-align: left;
+}
+
+.lexicon-list {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+}
+
+.lexicon-row {
+  display: grid;
+  grid-template-columns: 1fr 10rem 6rem 10rem;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--rule);
+}
+
+.lexicon-headword {
+  font-size: var(--text-headword);
+}
+
+.lexicon-pron {
+  font-size: var(--text-inline);
+  color: var(--ink);
+  opacity: 0.6;
+}
+
+.lexicon-syllables {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.lexicon-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-self: end;
+}
+
+/* Sound Changes page — stepped derivation timeline (DESIGN.md §5.4) */
+
+.derivation-timeline {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding-left: var(--space-6);
+  border-left: 2px solid var(--rule);
+}
+
+.derivation-step {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.derivation-step::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--space-6) - 1px);
+  top: 1.1em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rule);
+}
+
+.derivation-step.is-changed::before {
+  background: var(--accent);
+}
+
+.derivation-rule {
+  min-width: 4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+.derivation-form {
+  font-size: var(--text-headword);
+}
+
+.derivation-delta {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: var(--radius);
+  padding: 0 0.15em;
+}
+
+.derivation-noop {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink);
+  opacity: 0.6;
+}
+
+.rules-grip {
+  cursor: grab;
+  color: var(--rule);
+  text-align: center;
+  user-select: none;
+}
+
+.rules-row.is-dragging {
+  opacity: 0.5;
+}
+
+.rule-input {
+  width: 16rem;
+}
+
+.fork-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-2);
+}
+
+.fork-name-input {
+  width: 14rem;
+}
+
+/* Project page — the colophon (DESIGN.md §5.5) */
+
+.colophon {
+  max-width: 34rem;
+}
+
+.mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.project-name-input {
+  width: 16rem;
+}
+
+/* App shell */
+
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-6);
+}
+
+.app-head {
+  margin-bottom: var(--space-12);
+}
+
+.app-wordmark {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-title);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.app-nav {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.app-nav button {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  padding: var(--space-2) 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color var(--motion-fast);
+}
+
+.app-nav button:hover {
+  color: var(--ink);
+}
+
+.app-nav-aux {
+  color: var(--accent) !important;
+}
+
+.app-nav-tab + .app-nav-aux {
+  margin-left: auto;
+}
+
+.app-nav button[aria-current='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink) !important;
+}
+
+/* Home — the front door (DESIGN.md §5.7) */
+
+.landing {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(var(--space-8), 9vw, var(--space-16)) var(--space-6) var(--space-16);
+}
+
+.landing > * {
+  animation: reveal var(--motion-page) both;
+  animation-delay: calc(var(--beat, 0) * 90ms);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.landing-hero {
+  padding-bottom: var(--space-12);
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-kicker {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.landing-wordmark {
+  margin: 0;
+  font-size: var(--text-display);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+.landing-lede {
+  max-width: 34rem;
+  margin: var(--space-6) 0 var(--space-8);
+  font-size: var(--text-headword);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.landing-cta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.landing-textlink {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font: inherit;
+}
+
+.landing-textlink:hover {
+  color: var(--accent-hi);
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin: var(--space-12) 0;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 640px) {
+  .landing-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-step {
+  display: grid;
+  gap: var(--space-2);
+  border: none;
+  border-radius: 0;
+  background: var(--paper);
+  padding: var(--space-6);
+  text-align: left;
+  transition: background var(--motion-fast);
+}
+
+.landing-step:hover {
+  background: var(--surface);
+}
+
+.landing-step-n {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.landing-steps .landing-step:nth-child(2n) .landing-step-n {
+  color: var(--accent-2);
+}
+
+.landing-step-title {
+  font-family: var(--font-display);
+  font-size: var(--text-headword);
+  color: var(--ink);
+}
+
+.landing-step-blurb {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.landing-primer {
+  max-width: 40rem;
+  margin: var(--space-12) 0;
+}
+
+.landing-primer h2 {
+  font-size: var(--text-hero);
+}
+
+.landing-primer p {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-inline);
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.landing-colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-16);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-tag);
+  color: var(--muted);
+}
+
+/* Learn — the phonology primer (DESIGN.md §5.8) */
+
+.learn {
+  max-width: 44rem;
+}
+
+.learn > h2 {
+  font-size: var(--text-hero);
+}
+
+.learn-standfirst {
+  max-width: 34rem;
+  margin: 0 0 var(--space-12);
+  font-size: var(--text-headword);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.learn-standfirst a,
+.learn-reading a {
+  color: var(--accent);
+}
+
+.learn-standfirst a:hover,
+.learn-reading a:hover {
+  color: var(--accent-hi);
+}
+
+.learn-section {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.learn-section h3 {
+  font-size: var(--text-title);
+  margin-bottom: var(--space-6);
+}
+
+.learn-section .prose > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 3.4em;
+  line-height: 0.8;
+  padding: 0.06em 0.1em 0 0;
+  color: var(--accent);
+}
+
+.learn-reading-label {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.learn-reading {
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}

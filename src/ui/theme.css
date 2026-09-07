@@ -1,0 +1,72 @@
+/* Design tokens — dark editorial pass (DESIGN.md §5.6). The workbench reads like a
+   printed grammar: an ink-dark ground, warm cream text, one vermilion accent, and
+   an oversized editorial serif (Fraunces) for every heading. Charis SIL / Noto Sans
+   IPA still carries every piece of conlang data via `.ipa` — the language is the
+   subject, the page is its book. */
+
+:root {
+  /* Ground & ink. --paper is the page ground, --ink the foreground text: the
+     names keep their meaning, the values just went dark, so every existing
+     `color: var(--ink); background: var(--paper)` rule flips correctly. */
+  --paper: #14131a;
+  --ink: #f4efe6;
+  --surface: #1e1c26;
+  --surface-2: #262330;
+  --rule: #3a3644;
+  --muted: #a49db0;
+
+  --accent: #e2553d;
+  --accent-hi: #f06a50;
+  --accent-ink: #14131a;
+  --accent-2: #2f6f6a;
+
+  --signal: #ff8f6b;
+  --signal-bg: #2a1a16;
+
+  /* Type. Fraunces is self-hosted (fonts.css); Charis SIL leads --font-conlang for
+     opportunistic local use with the bundled Noto Sans IPA webfont as the
+     guaranteed fallback. */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', monospace;
+  --font-conlang: 'Charis SIL', 'Noto Sans IPA', 'Noto Sans', serif;
+
+  /* Editorial type scale */
+  --text-display: clamp(2.5rem, 7vw, 5rem);
+  --text-hero: 2.75rem;
+  --text-title: 1.75rem;
+  --text-headword: 1.375rem;
+  --text-inline: 1rem;
+  --text-tag: 0.75rem;
+
+  /* Spacing rhythm */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius: 2px;
+  --radius-lg: 0;
+
+  /* Motion: two orchestrated moments — the Home staggered reveal (--motion-page)
+     and the Phonotactics live-preview replay (--motion-hero). Everything else is
+     feedback-speed. All of it is cut by the reduced-motion override below. */
+  --motion-fast: 120ms ease-out;
+  --motion-hero: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-page: 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

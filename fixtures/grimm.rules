@@ -1,0 +1,14 @@
+# voiceless stops spirantize
+1: p > f
+2: t > θ
+3: k > x
+
+# voiced stops devoice
+4: b > p
+5: d > t
+6: g > k
+
+# aspirates deaspirate
+7: bʰ > b
+8: dʰ > d
+9: gʰ > g

@@ -1,0 +1,208 @@
+{
+  "inventory": {
+    "phonemes": [
+      {
+        "id": "p",
+        "ipa": "p",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "p"
+      },
+      {
+        "id": "b",
+        "ipa": "b",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "b"
+      },
+      {
+        "id": "bʰ",
+        "ipa": "bʰ",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "bʰ"
+      },
+      {
+        "id": "t",
+        "ipa": "t",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "t"
+      },
+      {
+        "id": "d",
+        "ipa": "d",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "d"
+      },
+      {
+        "id": "dʰ",
+        "ipa": "dʰ",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "dʰ"
+      },
+      {
+        "id": "k",
+        "ipa": "k",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "stop",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "k"
+      },
+      {
+        "id": "g",
+        "ipa": "g",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "g"
+      },
+      {
+        "id": "gʰ",
+        "ipa": "gʰ",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "stop",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "gʰ"
+      },
+      {
+        "id": "f",
+        "ipa": "f",
+        "features": {
+          "kind": "consonant",
+          "place": "labiodental",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "f"
+      },
+      {
+        "id": "θ",
+        "ipa": "θ",
+        "features": {
+          "kind": "consonant",
+          "place": "dental",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "θ"
+      },
+      {
+        "id": "x",
+        "ipa": "x",
+        "features": {
+          "kind": "consonant",
+          "place": "velar",
+          "manner": "fricative",
+          "voiced": false
+        },
+        "weight": 1,
+        "romanization": "x"
+      },
+      {
+        "id": "m",
+        "ipa": "m",
+        "features": {
+          "kind": "consonant",
+          "place": "bilabial",
+          "manner": "nasal",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "m"
+      },
+      {
+        "id": "r",
+        "ipa": "r",
+        "features": {
+          "kind": "consonant",
+          "place": "alveolar",
+          "manner": "trill",
+          "voiced": true
+        },
+        "weight": 1,
+        "romanization": "r"
+      },
+      {
+        "id": "a",
+        "ipa": "a",
+        "features": {
+          "kind": "vowel",
+          "height": "low",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 1,
+        "romanization": "a"
+      },
+      {
+        "id": "e",
+        "ipa": "e",
+        "features": {
+          "kind": "vowel",
+          "height": "mid-high",
+          "backness": "front",
+          "rounded": false,
+          "long": false
+        },
+        "weight": 1,
+        "romanization": "e"
+      }
+    ]
+  },
+  "words": [
+    { "input": ["p", "a", "t", "e", "r"], "expected": ["f", "a", "θ", "e", "r"] },
+    { "input": ["d", "e", "k", "e", "m"], "expected": ["t", "e", "x", "e", "m"] },
+    {
+      "input": ["bʰ", "r", "a", "t", "e", "r"],
+      "expected": ["b", "r", "a", "θ", "e", "r"]
+    }
+  ]
+}

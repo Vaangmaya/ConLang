@@ -2,6 +2,9 @@
 // Anything crossing a JSON boundary (project save/load, imports) is validated here.
 
 import { z } from 'zod';
+import type { GeneratedWord } from './generator';
+import type { Inventory } from './phoneme';
+import { render } from './romanization';
 
 const placeSchema = z.enum([
   'bilabial',
@@ -127,10 +130,35 @@ const generatedWordSchema = z.object({
   seed: z.number(),
 });
 
+const featureSpecSchema = z.object({
+  sign: z.enum(['+', '-']),
+  name: z.string(),
+});
+
+const atomSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('ipaLiteral'), value: z.string() }),
+  z.object({ type: z.literal('classRef'), symbol: z.string() }),
+  z.object({ type: z.literal('featureSet'), features: z.array(featureSpecSchema) }),
+  z.object({ type: z.literal('boundary') }),
+]);
+
+const seqOrEpsilonSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('seq'), atoms: z.array(atomSchema) }),
+  z.object({ type: z.literal('epsilon') }),
+]);
+
+const soundChangeAstSchema = z.object({
+  target: seqOrEpsilonSchema,
+  replacement: seqOrEpsilonSchema,
+  before: z.array(atomSchema).optional(),
+  after: z.array(atomSchema).optional(),
+});
+
 const soundChangeRuleSchema = z.object({
   id: z.string(),
   raw: z.string(),
   enabled: z.boolean(),
+  ast: soundChangeAstSchema.optional(),
 });
 
 export const projectSchema = z.object({
@@ -163,4 +191,55 @@ export function parseProject(
       message: issue.message,
     })),
   };
+}
+
+/** Serializes a Project to pretty-printed JSON for the Save/download action. */
+export function serializeProject(project: Project): string {
+  return JSON.stringify(project, null, 2);
+}
+
+export interface LexiconRow {
+  ipa: string;
+  romanized: string;
+  syllables: number;
+}
+
+function toIpa(phonemeIds: string[], inv: Inventory): string {
+  const byId = new Map(inv.phonemes.map((p) => [p.id, p]));
+  return phonemeIds
+    .map((id) => {
+      const p = byId.get(id);
+      if (!p) throw new Error(`toIpa: unknown phoneme id "${id}".`);
+      return p.ipa;
+    })
+    .join('');
+}
+
+/** Maps a lexicon to the flat {ipa, romanized, syllables} shape used by export. */
+export function lexiconToRows(lexicon: GeneratedWord[], inv: Inventory): LexiconRow[] {
+  return lexicon.map((word) => ({
+    ipa: toIpa(word.phonemeIds, inv),
+    romanized: render(word.phonemeIds, inv),
+    syllables: word.syllableBreaks.length,
+  }));
+}
+
+function escapeCsvField(field: string | number): string {
+  const s = String(field);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+/** CSV export (DESIGN.md §4.8): header "ipa,romanized,syllables" plus one row per word. */
+export function exportLexiconCsv(lexicon: GeneratedWord[], inv: Inventory): string {
+  const rows = lexiconToRows(lexicon, inv);
+  const lines = [
+    'ipa,romanized,syllables',
+    ...rows.map((r) => [r.ipa, r.romanized, r.syllables].map(escapeCsvField).join(',')),
+  ];
+  return lines.join('\n');
+}
+
+/** JSON export (DESIGN.md §4.8): the same rows as the CSV export, pretty-printed. */
+export function exportLexiconJson(lexicon: GeneratedWord[], inv: Inventory): string {
+  return JSON.stringify(lexiconToRows(lexicon, inv), null, 2);
 }

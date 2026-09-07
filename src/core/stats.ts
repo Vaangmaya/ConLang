@@ -18,9 +18,42 @@ export interface PhonemeFrequency {
   observed: number;
 }
 
+/**
+ * Compares each phoneme's configured weight (normalized within its kind —
+ * consonant or vowel — since that's the partition the default "C"/"V"
+ * classes sample over) against its observed share of that kind's occurrences
+ * in the lexicon.
+ */
 export function frequencyReport(
-  _lexicon: GeneratedWord[],
-  _inv: Inventory,
+  lexicon: GeneratedWord[],
+  inv: Inventory,
 ): PhonemeFrequency[] {
-  throw new Error('not implemented');
+  const kindById = new Map(inv.phonemes.map((p) => [p.id, p.features.kind]));
+
+  const configuredWeightByKind = new Map<string, number>();
+  for (const p of inv.phonemes) {
+    configuredWeightByKind.set(
+      p.features.kind,
+      (configuredWeightByKind.get(p.features.kind) ?? 0) + p.weight,
+    );
+  }
+
+  const countById = new Map<string, number>();
+  const countByKind = new Map<string, number>();
+  for (const word of lexicon) {
+    for (const id of word.phonemeIds) {
+      const kind = kindById.get(id);
+      if (kind === undefined) continue;
+      countById.set(id, (countById.get(id) ?? 0) + 1);
+      countByKind.set(kind, (countByKind.get(kind) ?? 0) + 1);
+    }
+  }
+
+  return inv.phonemes.map((p) => {
+    const configuredTotal = configuredWeightByKind.get(p.features.kind) ?? 0;
+    const configured = configuredTotal > 0 ? p.weight / configuredTotal : 0;
+    const kindTotal = countByKind.get(p.features.kind) ?? 0;
+    const observed = kindTotal > 0 ? (countById.get(p.id) ?? 0) / kindTotal : 0;
+    return { phonemeId: p.id, configured, observed };
+  });
 }

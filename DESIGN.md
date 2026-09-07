@@ -28,6 +28,7 @@ conlang-workbench/
 │   │   ├── features.ts    # feature system, natural-class queries
 │   │   ├── phoneme.ts     # Phoneme, Inventory
 │   │   ├── romanization.ts# longest-match tokenizer, renderer
+│   │   ├── classes.ts     # PhonemeClass resolution, auto C/V (shared by constraints.ts, generator.ts)
 │   │   ├── template/
 │   │   │   ├── ast.ts
 │   │   │   └── parser.ts  # syllable-template grammar (§4.3)
@@ -41,9 +42,10 @@ conlang-workbench/
 │   │   ├── stats.ts       # default weights, frequency reports (§4.9)
 │   │   └── project.ts     # zod schemas, (de)serialization (§4.8)
 │   ├── ui/
-│   │   ├── state/         # store (zustand); thin wrapper over core
-│   │   ├── components/
-│   │   └── pages/         # Inventory, Phonotactics, Lexicon, SoundChanges, Project
+│   │   ├── state/         # store (zustand); thin wrapper over core + the `view` nav slice
+│   │   ├── components/    # Button, Field, Panel, Table (§5.6)
+│   │   ├── assets/fonts/  # self-hosted woff2: Noto Sans IPA subsets + Fraunces (+ OFL-Fraunces.txt)
+│   │   └── pages/         # Landing, Learn, Inventory, Phonotactics, Lexicon, SoundChanges, Project
 │   └── main.tsx
 ├── fixtures/              # hawaiian.json, japanese-lite.json, grimm.rules, grimm.expected.json
 └── .claude/commands/      # custom slash commands (e.g. checkpoint.md)
@@ -182,7 +184,7 @@ Deterministic given a seed. Algorithm per word: sample syllable count from `syll
 
 ### 4.5 Constraints (`constraints.ts`)
 
-v1 constraint types, each a predicate over `(phonemeIds, syllableBreaks, inv)`:
+v1 constraint types, each a predicate over `(phonemeIds, syllableBreaks, inv)`. In practice `checkConstraints` takes pre-resolved `classes: PhonemeClass[]` (see `classes.ts`) rather than a raw `Inventory`: only `BannedSequence`'s class-ref tokens and `RequiredOnset`'s consonant check need class resolution, and both are resolved once per `generate()` call rather than per constraint check.
 
 1. `BannedSequence` — a sequence of class refs and/or phoneme literals; scope: `anywhere | wordInitial | wordFinal | withinSyllable | acrossSyllableBoundary`.
 2. `Sonority` — onsets rise, codas fall, per a configurable sonority scale (default: stop 1 < affricate 2 < fricative 3 < nasal 4 < lateral/liquid 5 < approximant/glide 6 < vowel 7); ties configurable as allowed/banned.
@@ -230,15 +232,59 @@ Default phoneme weights follow the Gusein-Zade distribution over a class of n ph
 
 ## 5. UI specification
 
-Five pages, one shared store (zustand). The store holds a single `Project` plus UI state; every mutation delegates to a pure `core` function. Components never re-implement core logic.
+One shared store (zustand). It holds a single `Project`, UI state, and a `view` slice that names the current screen; every domain mutation delegates to a pure `core` function and components never re-implement core logic. The app **opens on Home** (§5.7); "Enter the workbench" drops the visitor into Inventory. The five tool pages are numbered §5.1–§5.5 in page order and `src/ui/styles.css` is organised into matching per-page blocks headed `/* … (DESIGN.md §5.x) */`; Home (§5.7) and Learn (§5.8) have their own blocks.
 
-1. **Inventory** — consonant grid (place × manner, voiced/voiceless pairs per cell) and vowel table (height × backness, rounded/long toggles); click to add/remove; per-phoneme weight slider and romanization field; live collision warnings from §4.2.
-2. **Phonotactics** — class editor (symbol → member picker); template list with per-template weight and inline parse errors; constraint builder (forms per §4.5 type); syllable-count sliders; a live preview panel showing 10 sample words, regenerated (debounced 300 ms) on any grammar edit — this live feedback is the heart of the UX.
-3. **Lexicon** — "Generate N words" (N ≤ 5,000) with seed field; sortable table (IPA, romanization, syllable count); per-row reroll; delete; export buttons; the unsatisfiability diagnostic banner surfaces here and in Phonotactics.
-4. **Sound Changes** — ordered rule list (add/edit/enable/disable/reorder with drag handles); inline rule-parse errors; a before → after diff table over the lexicon; click a word to expand its full derivation trace; "fork daughter language" button clones the project with the output lexicon.
-5. **Project** — name, save/download, load/import (with zod error display), reset, and the frequency report from §4.9.
+### 5.1 Inventory
+
+Consonant grid (place × manner, voiced/voiceless pairs per cell) and vowel table (height × backness, rounded/long toggles); click to add/remove; per-phoneme weight slider and romanization field; live collision warnings from §4.2.
+
+### 5.2 Phonotactics
+
+Class editor (symbol → member picker); template list with per-template weight and inline parse errors; constraint builder (forms per §4.5 type); syllable-count sliders; a live preview panel showing 10 sample words, regenerated (debounced 300 ms) on any grammar edit — this live feedback is the heart of the UX.
+
+### 5.3 Lexicon
+
+"Generate N words" (N ≤ 5,000) with seed field; sortable table (IPA, romanization, syllable count); per-row reroll; delete; export buttons; the unsatisfiability diagnostic banner surfaces here and in Phonotactics.
+
+### 5.4 Sound Changes
+
+Ordered rule list (add/edit/enable/disable/reorder with drag handles); inline rule-parse errors; a before → after diff table over the lexicon; click a word to expand its full derivation trace; "fork daughter language" button clones the project with the output lexicon.
+
+### 5.5 Project
+
+Name, save/download, load/import (with zod error display), reset, and the frequency report from §4.9.
 
 IPA rendering: bundle Charis SIL (or Noto Sans) via `@font-face`; do not rely on system fonts.
+
+### 5.6 Visual design system
+
+A dark editorial identity: the workbench reads like a printed grammar — an ink-dark ground, warm cream text, one vermilion accent, and an oversized editorial serif for every heading. §5.1–§5.5 above correspond to the five tool pages in order, and `styles.css` is organised into matching per-page blocks; §5.7 (Home) and §5.8 (Learn) sit in their own blocks.
+
+**Tokens.** `src/ui/theme.css` is the single source of truth — one `:root` block. Dark-only, no light mode.
+
+- _Palette_ — `--paper` (`#14131a`, the ink ground) and `--ink` (`#f4efe6`, cream foreground) keep their names and roles, only the values went dark. `--surface` / `--surface-2` are raised blocks; `--rule` is hairlines; `--muted` is secondary text. `--accent` is vermilion `#e2553d` (+ `--accent-hi` hover, `--accent-ink` for text on fills); `--accent-2` is a muted teal used **only** for color-block variety (Home steps, Learn markers). `--signal` / `--signal-bg` carry warnings and errors on the dark ground. The `body` ground carries two low-opacity radial glows (rgba mirrors of `--accent` and `--accent-2`) for depth — CSS only, no image asset.
+- _Type_ — four stacks: `--font-display` (`'Fraunces'`, a self-hosted partial-variable woff2 over wght 340–680 with an optical-size axis, so large headings take the high-contrast display cut automatically; falls back to Georgia) carries every heading, the Home wordmark, and pull quotes; `--font-ui` (`system-ui`) carries controls, labels, nav, and body copy; `--font-mono`; and `--font-conlang` (`'Charis SIL'` → the bundled `'Noto Sans IPA'` webfont) still carries **every piece of conlang data** via `.ipa` — the language is the subject, the page is its book. Editorial scale: `--text-display` (`clamp()` hero) / `--text-hero` / `--text-title` / `--text-headword` / `--text-inline` / `--text-tag`.
+- _Spacing_ — `--space-1/2/3/4/6/8` plus `--space-12` / `--space-16` for section rhythm. `--radius: 2px`; color blocks are hard-edged (`--radius-lg: 0`).
+- _Motion_ — `--motion-fast` (120 ms, feedback), `--motion-hero` (420 ms), `--motion-page` (600 ms). **Two** orchestrated moments: the Home staggered page-load reveal (§5.7) and the Phonotactics live-preview `materialize` replay on `.preview-stage`. Motion everywhere else is feedback-speed at most; reveal animations use `animation … both` with a visible end state so the global `prefers-reduced-motion: reduce` rule (which still cuts all of it) leaves everything shown.
+
+**Primitives.** `src/ui/components/` (reserved in §2) holds four intentionally minimal, token-driven, prop-forwarding components — no config-object table API:
+
+- `Button` — emits `.btn` plus an optional `.btn--primary` / `.btn--ghost` / `.btn--danger`.
+- `Field` — a real `<label htmlFor>` bound to one control (`.field`, `.field--inline`, `.field-label`, `.field-hint`); reuses `.error-text`. Checkboxes keep the native wrapping label (`.checkbox`).
+- `Panel` — the bordered editor card (`.panel`, `.panel-head`, `.panel-title`, `.panel-actions`).
+- `Table` — `<table class="ptable">` optionally inside `.ptable-scroll`; callers keep native table markup.
+
+Shared form utilities live alongside: `.btn-row`, `.field-row`, `.num-input`.
+
+**Where styles live.** The element resets plus `.ipa` / `.tag` / `.warning-banner` / `.error-text` and the primitives block are shared, at the top of `styles.css`; everything else sits in the per-page block headed `/* … (DESIGN.md §5.x) */`.
+
+### 5.7 Home (landing)
+
+The app's front door and default `view`. Full-bleed (its own column, not the 64 rem tool measure): a display-type wordmark and one-line positioning; a primary **Enter the workbench** button (`setView('inventory')`) beside a **Read the primer →** link (`setView('learn')`); a four-panel "how it works" grid whose panels double as shortcuts into each tool page; a short "new to this?" paragraph; a colophon. One orchestrated staggered reveal on load (`@keyframes reveal`, per-block `--beat` delay, `--motion-page`) — the second orchestrated motion moment alongside the Phonotactics preview, and cut by the reduced-motion rule with everything shown.
+
+### 5.8 Learn (phonology primer)
+
+A `view` reachable from the nav and from every tool page's `.page-intro` link. Four short original explainers — **Sounds & the IPA · Designing an inventory · Phonotactics · Sound change**, one per tool page — set as editorial long-form (`.prose`, a drop-cap on the first paragraph). Each ends with a **Further reading** list of real external links (`target="_blank" rel="noopener noreferrer"`) to [Conlang University](https://sites.google.com/view/conlangs-university/lessons), the [Language Construction Kit](http://www.zompist.com/kit.html), the [Conlanger's Library](https://library.conlang.org/education/), and Index Diachronica. The prose is written for this app and follows the Conlang University phonology track in spirit; none of it is copied from those materials.
 
 ## 6. Testing strategy
 
