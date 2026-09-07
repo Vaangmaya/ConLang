@@ -64,6 +64,16 @@ DESIGN.md §5, wired to core.
       `src/ui/App.acceptance.test.tsx` (no browser was available in this
       environment; re-run the walkthrough in an actual browser before ship)
 
+## Phase 5b — Front door & primer
+
+DESIGN.md §5.6–§5.8. A newcomer needs a way in.
+
+- [x] Dark editorial redesign — theme tokens, self-hosted Fraunces, shell
+- [x] Home landing page (opens here; "Enter the workbench" CTA, staggered reveal)
+- [x] Learn primer (four sections, each with further-reading links)
+- [ ] Restyle the five tool pages onto the editorial system + `.page-intro` hints
+- [ ] `index.html` metadata + favicon
+
 ## Phase 6 — Ship
 
 - [ ] GitHub Pages deploy via Actions

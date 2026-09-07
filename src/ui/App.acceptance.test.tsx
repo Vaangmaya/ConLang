@@ -24,6 +24,7 @@ function resetStore(): void {
   useWorkbenchStore.setState({
     project: createDefaultProject(),
     projectVersion: 0,
+    view: 'home',
     importErrors: null,
     lexiconDiagnostics: null,
     lexiconError: null,
@@ -49,6 +50,9 @@ describe('Phase 5 acceptance loop', () => {
   it('builds Hawaiian, generates words, derives, exports, and reloads', async () => {
     const user = userEvent.setup();
     render(<App />);
+
+    // --- Front door: the app opens on the landing page (DESIGN.md §5.7) ---
+    await user.click(screen.getByRole('button', { name: /enter the workbench/i }));
 
     // --- Inventory: a small Hawaiian-like phoneme set ---
     for (const ipa of ['p', 'k', 'ʔ', 'h', 'm', 'n', 'w', 'l', 'a', 'e', 'i', 'o', 'u']) {

@@ -232,7 +232,7 @@ Default phoneme weights follow the Gusein-Zade distribution over a class of n ph
 
 ## 5. UI specification
 
-Five pages, one shared store (zustand). The store holds a single `Project` plus UI state; every mutation delegates to a pure `core` function. Components never re-implement core logic. The five subsections below are numbered §5.1–§5.5 in page order; `src/ui/styles.css` is organised into matching per-page section blocks, each headed `/* … (DESIGN.md §5.x) */`.
+One shared store (zustand). It holds a single `Project`, UI state, and a `view` slice that names the current screen; every domain mutation delegates to a pure `core` function and components never re-implement core logic. The app **opens on Home** (§5.7); "Enter the workbench" drops the visitor into Inventory. The five tool pages are numbered §5.1–§5.5 in page order and `src/ui/styles.css` is organised into matching per-page blocks headed `/* … (DESIGN.md §5.x) */`; Home (§5.7) and Learn (§5.8) have their own blocks.
 
 ### 5.1 Inventory
 
@@ -277,6 +277,14 @@ A dark editorial identity: the workbench reads like a printed grammar — an ink
 Shared form utilities live alongside: `.btn-row`, `.field-row`, `.num-input`.
 
 **Where styles live.** The element resets plus `.ipa` / `.tag` / `.warning-banner` / `.error-text` and the primitives block are shared, at the top of `styles.css`; everything else sits in the per-page block headed `/* … (DESIGN.md §5.x) */`.
+
+### 5.7 Home (landing)
+
+The app's front door and default `view`. Full-bleed (its own column, not the 64 rem tool measure): a display-type wordmark and one-line positioning; a primary **Enter the workbench** button (`setView('inventory')`) beside a **Read the primer →** link (`setView('learn')`); a four-panel "how it works" grid whose panels double as shortcuts into each tool page; a short "new to this?" paragraph; a colophon. One orchestrated staggered reveal on load (`@keyframes reveal`, per-block `--beat` delay, `--motion-page`) — the second orchestrated motion moment alongside the Phonotactics preview, and cut by the reduced-motion rule with everything shown.
+
+### 5.8 Learn (phonology primer)
+
+A `view` reachable from the nav and from every tool page's `.page-intro` link. Four short original explainers — **Sounds & the IPA · Designing an inventory · Phonotactics · Sound change**, one per tool page — set as editorial long-form (`.prose`, a drop-cap on the first paragraph). Each ends with a **Further reading** list of real external links (`target="_blank" rel="noopener noreferrer"`) to [Conlang University](https://sites.google.com/view/conlangs-university/lessons), the [Language Construction Kit](http://www.zompist.com/kit.html), the [Conlanger's Library](https://library.conlang.org/education/), and Index Diachronica. The prose is written for this app and follows the Conlang University phonology track in spirit; none of it is copied from those materials.
 
 ## 6. Testing strategy
 

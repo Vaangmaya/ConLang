@@ -34,16 +34,32 @@ export interface PreviewState {
   error?: string;
 }
 
+/** Which screen the shell is showing. The app opens on 'home' (DESIGN.md §5.7);
+ * 'learn' is the phonology primer (§5.8); the rest are the five tool pages. */
+export type View =
+  | 'home'
+  | 'learn'
+  | 'inventory'
+  | 'phonotactics'
+  | 'lexicon'
+  | 'sound-changes'
+  | 'project';
+
 export interface WorkbenchState {
   project: Project;
   /** Bumped only on whole-project swaps (load/reset/fork), never on field edits —
    * pages key local editing state off this to reset drafts without losing
    * in-progress edits on every keystroke. */
   projectVersion: number;
+  /** Current screen. Nav lives here so the landing CTA, the shell nav, and each
+   * tool page's "Learn more" link all drive it without prop-drilling. */
+  view: View;
   importErrors: ProjectValidationError[] | null;
   lexiconDiagnostics: GenDiagnostics | null;
   lexiconError: string | null;
   preview: PreviewState | null;
+
+  setView: (view: View) => void;
 
   setProjectName: (name: string) => void;
   setInventory: (inventory: Inventory) => void;
@@ -70,10 +86,13 @@ export interface WorkbenchState {
 export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   project: createDefaultProject(),
   projectVersion: 0,
+  view: 'home',
   importErrors: null,
   lexiconDiagnostics: null,
   lexiconError: null,
   preview: null,
+
+  setView: (view) => set({ view }),
 
   setProjectName: (name) => set((s) => ({ project: { ...s.project, name } })),
 

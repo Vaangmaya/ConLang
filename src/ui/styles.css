@@ -614,10 +614,27 @@ main {
   padding: var(--space-6);
 }
 
+.app-head {
+  margin-bottom: var(--space-12);
+}
+
+.app-wordmark {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-title);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
 .app-nav {
   display: flex;
+  align-items: baseline;
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  margin-top: var(--space-3);
+  padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--rule);
 }
 
@@ -626,12 +643,243 @@ main {
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: none;
-  padding: var(--space-2) var(--space-1);
-  font-weight: 400;
+  padding: var(--space-2) 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color var(--motion-fast);
+}
+
+.app-nav button:hover {
   color: var(--ink);
+}
+
+.app-nav-aux {
+  color: var(--accent) !important;
+}
+
+.app-nav-tab + .app-nav-aux {
+  margin-left: auto;
 }
 
 .app-nav button[aria-current='true'] {
   border-bottom-color: var(--accent);
-  font-weight: 600;
+  color: var(--ink) !important;
+}
+
+/* Home — the front door (DESIGN.md §5.7) */
+
+.landing {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(var(--space-8), 9vw, var(--space-16)) var(--space-6) var(--space-16);
+}
+
+.landing > * {
+  animation: reveal var(--motion-page) both;
+  animation-delay: calc(var(--beat, 0) * 90ms);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.landing-hero {
+  padding-bottom: var(--space-12);
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-kicker {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.landing-wordmark {
+  margin: 0;
+  font-size: var(--text-display);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+.landing-lede {
+  max-width: 34rem;
+  margin: var(--space-6) 0 var(--space-8);
+  font-size: var(--text-headword);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.landing-cta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.landing-textlink {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font: inherit;
+}
+
+.landing-textlink:hover {
+  color: var(--accent-hi);
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin: var(--space-12) 0;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 640px) {
+  .landing-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-step {
+  display: grid;
+  gap: var(--space-2);
+  border: none;
+  border-radius: 0;
+  background: var(--paper);
+  padding: var(--space-6);
+  text-align: left;
+  transition: background var(--motion-fast);
+}
+
+.landing-step:hover {
+  background: var(--surface);
+}
+
+.landing-step-n {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.landing-steps .landing-step:nth-child(2n) .landing-step-n {
+  color: var(--accent-2);
+}
+
+.landing-step-title {
+  font-family: var(--font-display);
+  font-size: var(--text-headword);
+  color: var(--ink);
+}
+
+.landing-step-blurb {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.landing-primer {
+  max-width: 40rem;
+  margin: var(--space-12) 0;
+}
+
+.landing-primer h2 {
+  font-size: var(--text-hero);
+}
+
+.landing-primer p {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-inline);
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.landing-colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-16);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-tag);
+  color: var(--muted);
+}
+
+/* Learn — the phonology primer (DESIGN.md §5.8) */
+
+.learn {
+  max-width: 44rem;
+}
+
+.learn > h2 {
+  font-size: var(--text-hero);
+}
+
+.learn-standfirst {
+  max-width: 34rem;
+  margin: 0 0 var(--space-12);
+  font-size: var(--text-headword);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.learn-standfirst a,
+.learn-reading a {
+  color: var(--accent);
+}
+
+.learn-standfirst a:hover,
+.learn-reading a:hover {
+  color: var(--accent-hi);
+}
+
+.learn-section {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.learn-section h3 {
+  font-size: var(--text-title);
+  margin-bottom: var(--space-6);
+}
+
+.learn-section .prose > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 3.4em;
+  line-height: 0.8;
+  padding: 0.06em 0.1em 0 0;
+  color: var(--accent);
+}
+
+.learn-reading-label {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-tag);
+  font-variant-caps: small-caps;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.learn-reading {
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: 0.9375rem;
+  line-height: 1.7;
 }
