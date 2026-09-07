@@ -7,7 +7,15 @@
 
 body {
   margin: 0;
-  background: var(--paper);
+  min-height: 100vh;
+  background-color: var(--paper);
+  /* Atmosphere: two soft glows on the ink ground (rgba mirrors --accent and
+     --accent-2 so the page has depth without an image asset). */
+  background-image:
+    radial-gradient(80vw 60vh at 8% -5%, rgba(226, 85, 61, 0.1), transparent 60%),
+    radial-gradient(70vw 52vh at 100% 100%, rgba(47, 111, 106, 0.08), transparent 55%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--ink);
   font-family: var(--font-ui);
   font-size: 0.9375rem;
@@ -17,8 +25,10 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
   margin: 0 0 var(--space-4);
 }
 
@@ -42,7 +52,7 @@ button {
   cursor: pointer;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: var(--paper);
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -51,7 +61,7 @@ select {
   font: inherit;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: var(--paper);
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -87,6 +97,37 @@ select {
   margin-left: var(--space-1);
 }
 
+/* Contextual one-liner under each tool page's <h2>, with a link into Learn. */
+.page-intro {
+  max-width: 46rem;
+  margin: calc(-1 * var(--space-2)) 0 var(--space-8);
+  color: var(--muted);
+  font-size: var(--text-inline);
+}
+
+.page-intro button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font: inherit;
+}
+
+.page-intro button:hover {
+  color: var(--accent-hi);
+}
+
+/* Long-form editorial prose scaffold (Learn page fills in the rest). */
+.prose {
+  max-width: 34rem;
+  font-size: var(--text-inline);
+  line-height: 1.7;
+}
+
+.prose p {
+  margin: 0 0 var(--space-4);
+}
+
 /* Shared UI primitives — Button / Field / Panel / Table (DESIGN.md §5.6) */
 
 .btn--primary {
@@ -102,7 +143,7 @@ select {
 }
 
 .btn--ghost:hover {
-  background: var(--surface);
+  background: var(--surface-2);
 }
 
 .btn--danger {
@@ -161,7 +202,9 @@ select {
 
 .panel {
   border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent);
   border-radius: var(--radius);
+  background: var(--surface);
   padding: var(--space-3);
   margin-bottom: var(--space-2);
 }
@@ -188,7 +231,7 @@ select {
 }
 
 .ptable th {
-  background: var(--surface);
+  background: var(--surface-2);
   font-family: var(--font-ui);
   font-size: var(--text-tag);
   font-variant-caps: small-caps;

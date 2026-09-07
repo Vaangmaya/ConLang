@@ -42,9 +42,10 @@ conlang-workbench/
 │   │   ├── stats.ts       # default weights, frequency reports (§4.9)
 │   │   └── project.ts     # zod schemas, (de)serialization (§4.8)
 │   ├── ui/
-│   │   ├── state/         # store (zustand); thin wrapper over core
-│   │   ├── components/
-│   │   └── pages/         # Inventory, Phonotactics, Lexicon, SoundChanges, Project
+│   │   ├── state/         # store (zustand); thin wrapper over core + the `view` nav slice
+│   │   ├── components/    # Button, Field, Panel, Table (§5.6)
+│   │   ├── assets/fonts/  # self-hosted woff2: Noto Sans IPA subsets + Fraunces (+ OFL-Fraunces.txt)
+│   │   └── pages/         # Landing, Learn, Inventory, Phonotactics, Lexicon, SoundChanges, Project
 │   └── main.tsx
 ├── fixtures/              # hawaiian.json, japanese-lite.json, grimm.rules, grimm.expected.json
 └── .claude/commands/      # custom slash commands (e.g. checkpoint.md)
@@ -257,14 +258,14 @@ IPA rendering: bundle Charis SIL (or Noto Sans) via `@font-face`; do not rely on
 
 ### 5.6 Visual design system
 
-The visual language was added after the pages were first wired to core; §5.1–§5.5 above correspond to the five pages in order, and `styles.css` follows the same order.
+A dark editorial identity: the workbench reads like a printed grammar — an ink-dark ground, warm cream text, one vermilion accent, and an oversized editorial serif for every heading. §5.1–§5.5 above correspond to the five tool pages in order, and `styles.css` is organised into matching per-page blocks; §5.7 (Home) and §5.8 (Learn) sit in their own blocks.
 
-**Tokens.** `src/ui/theme.css` is the single source of truth — one `:root` block, no dark mode:
+**Tokens.** `src/ui/theme.css` is the single source of truth — one `:root` block. Dark-only, no light mode.
 
-- _Palette_ — `--ink` / `--paper` / `--surface` / `--rule` (a warm-grey "paper" ground), a navy `--accent` (+ `--accent-ink`), and a rust `--signal` (+ `--signal-bg`) for warnings and errors.
-- _Type_ — three stacks: `--font-ui` (`system-ui`), `--font-mono`, and `--font-conlang` (`'Charis SIL'` → the bundled `'Noto Sans IPA'` webfont). Every piece of conlang data renders in `--font-conlang` via `.ipa`; the two UI faces stay quiet and recede. Four sizes only: `--text-hero` / `--text-headword` / `--text-inline` / `--text-tag`.
-- _Spacing_ — `--space-1/2/3/4/6/8` (deliberately no 5 or 7). `--radius: 3px`.
-- _Motion_ — `--motion-fast` (120 ms, feedback only) and `--motion-hero` (420 ms). The Phonotactics live-preview `materialize` replay on `.preview-stage` is the one orchestrated animation; motion everywhere else is feedback-speed at most. A global `prefers-reduced-motion: reduce` rule cuts all of it.
+- _Palette_ — `--paper` (`#14131a`, the ink ground) and `--ink` (`#f4efe6`, cream foreground) keep their names and roles, only the values went dark. `--surface` / `--surface-2` are raised blocks; `--rule` is hairlines; `--muted` is secondary text. `--accent` is vermilion `#e2553d` (+ `--accent-hi` hover, `--accent-ink` for text on fills); `--accent-2` is a muted teal used **only** for color-block variety (Home steps, Learn markers). `--signal` / `--signal-bg` carry warnings and errors on the dark ground. The `body` ground carries two low-opacity radial glows (rgba mirrors of `--accent` and `--accent-2`) for depth — CSS only, no image asset.
+- _Type_ — four stacks: `--font-display` (`'Fraunces'`, a self-hosted partial-variable woff2 over wght 340–680 with an optical-size axis, so large headings take the high-contrast display cut automatically; falls back to Georgia) carries every heading, the Home wordmark, and pull quotes; `--font-ui` (`system-ui`) carries controls, labels, nav, and body copy; `--font-mono`; and `--font-conlang` (`'Charis SIL'` → the bundled `'Noto Sans IPA'` webfont) still carries **every piece of conlang data** via `.ipa` — the language is the subject, the page is its book. Editorial scale: `--text-display` (`clamp()` hero) / `--text-hero` / `--text-title` / `--text-headword` / `--text-inline` / `--text-tag`.
+- _Spacing_ — `--space-1/2/3/4/6/8` plus `--space-12` / `--space-16` for section rhythm. `--radius: 2px`; color blocks are hard-edged (`--radius-lg: 0`).
+- _Motion_ — `--motion-fast` (120 ms, feedback), `--motion-hero` (420 ms), `--motion-page` (600 ms). **Two** orchestrated moments: the Home staggered page-load reveal (§5.7) and the Phonotactics live-preview `materialize` replay on `.preview-stage`. Motion everywhere else is feedback-speed at most; reveal animations use `animation … both` with a visible end state so the global `prefers-reduced-motion: reduce` rule (which still cuts all of it) leaves everything shown.
 
 **Primitives.** `src/ui/components/` (reserved in §2) holds four intentionally minimal, token-driven, prop-forwarding components — no config-object table API:
 
