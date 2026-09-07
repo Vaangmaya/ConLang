@@ -4,6 +4,9 @@
 import { useRef } from 'react';
 import { serializeProject } from '../../core/project';
 import { frequencyReport } from '../../core/stats';
+import { Button } from '../components/Button';
+import { Field } from '../components/Field';
+import { Table } from '../components/Table';
 import { downloadTextFile } from '../download';
 import { useWorkbenchStore } from '../state/store';
 
@@ -52,27 +55,18 @@ export function ProjectPage(): JSX.Element {
     <section aria-label="Project" className="colophon">
       <h2>Project</h2>
 
-      <label>
-        Name:{' '}
+      <Field label="Name" inline>
         <input
           type="text"
+          className="project-name-input"
           value={project.name}
           onChange={(e) => setProjectName(e.target.value)}
-          style={{ width: '16rem' }}
         />
-      </label>
+      </Field>
 
-      <div style={{ margin: '0.5rem 0' }}>
-        <button type="button" onClick={handleSave}>
-          Save (download JSON)
-        </button>
-        <button
-          type="button"
-          style={{ marginLeft: '0.5rem' }}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          Load / import
-        </button>
+      <div className="btn-row">
+        <Button onClick={handleSave}>Save (download JSON)</Button>
+        <Button onClick={() => fileInputRef.current?.click()}>Load / import</Button>
         <input
           ref={fileInputRef}
           type="file"
@@ -80,9 +74,7 @@ export function ProjectPage(): JSX.Element {
           style={{ display: 'none' }}
           onChange={handleFileChosen}
         />
-        <button type="button" style={{ marginLeft: '0.5rem' }} onClick={handleReset}>
-          Reset
-        </button>
+        <Button onClick={handleReset}>Reset</Button>
       </div>
 
       {importErrors && (
@@ -97,9 +89,9 @@ export function ProjectPage(): JSX.Element {
               </li>
             ))}
           </ul>
-          <button type="button" onClick={clearImportErrors}>
+          <Button variant="ghost" onClick={clearImportErrors}>
             Dismiss
-          </button>
+          </Button>
         </div>
       )}
 
@@ -107,7 +99,7 @@ export function ProjectPage(): JSX.Element {
       {frequencies.length === 0 ? (
         <p>Add phonemes on the Inventory page to see a frequency report.</p>
       ) : (
-        <table>
+        <Table label="Frequency report" className="freq-table">
           <thead>
             <tr>
               <th>Phoneme</th>
@@ -124,7 +116,7 @@ export function ProjectPage(): JSX.Element {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </section>
   );

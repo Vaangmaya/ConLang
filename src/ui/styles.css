@@ -551,6 +551,10 @@ select {
   font-variant-numeric: tabular-nums;
 }
 
+.project-name-input {
+  width: 16rem;
+}
+
 /* App shell */
 
 main {
