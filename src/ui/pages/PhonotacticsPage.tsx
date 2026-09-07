@@ -15,6 +15,9 @@ import type { SyllableTemplate } from '../../core/generator';
 import type { Inventory } from '../../core/phoneme';
 import { render } from '../../core/romanization';
 import { parseTemplate, type TemplateParseResult } from '../../core/template/parser';
+import { Button } from '../components/Button';
+import { Field } from '../components/Field';
+import { Panel } from '../components/Panel';
 import { randomSeed, useWorkbenchStore } from '../state/store';
 
 const SCOPES: ConstraintScope[] = [
@@ -104,21 +107,28 @@ function ClassEditor({ classes, inventory, onChange }: ClassEditorProps): JSX.El
   return (
     <div>
       {classes.map((cls, i) => (
-        <div
+        <Panel
           key={i}
-          style={{
-            border: '1px solid var(--rule)',
-            padding: '0.5rem',
-            marginBottom: '0.5rem',
-          }}
+          actions={
+            <Button variant="ghost" onClick={() => removeAt(i)}>
+              Remove class
+            </Button>
+          }
         >
-          <label>
-            Symbol:{' '}
+          <Field
+            label="Symbol"
+            inline
+            error={
+              (symbolCounts.get(cls.symbol) ?? 0) > 1
+                ? `duplicate symbol "${cls.symbol}"`
+                : undefined
+            }
+          >
             <input
               type="text"
+              className="symbol-input"
               value={cls.symbol}
               maxLength={1}
-              style={{ width: '2rem' }}
               onChange={(e) =>
                 updateAt(i, {
                   ...cls,
@@ -126,25 +136,8 @@ function ClassEditor({ classes, inventory, onChange }: ClassEditorProps): JSX.El
                 })
               }
             />
-          </label>
-          {(symbolCounts.get(cls.symbol) ?? 0) > 1 && (
-            <span className="error-text"> duplicate symbol "{cls.symbol}"</span>
-          )}
-          <button
-            type="button"
-            onClick={() => removeAt(i)}
-            style={{ marginLeft: '1rem' }}
-          >
-            Remove class
-          </button>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.25rem',
-              marginTop: '0.5rem',
-            }}
-          >
+          </Field>
+          <div className="member-grid">
             {inventory.phonemes.map((p) => {
               const active = cls.members.includes(p.id);
               return (
@@ -167,11 +160,9 @@ function ClassEditor({ classes, inventory, onChange }: ClassEditorProps): JSX.El
               );
             })}
           </div>
-        </div>
+        </Panel>
       ))}
-      <button type="button" onClick={addClass}>
-        Add class
-      </button>
+      <Button onClick={addClass}>Add class</Button>
     </div>
   );
 }
@@ -241,30 +232,27 @@ function TemplateEditor({
   return (
     <div>
       {results.map((d, i) => (
-        <div key={d.key} style={{ marginBottom: '0.5rem' }}>
+        <div key={d.key} className="template-row">
           <input
             type="text"
-            className="ipa"
+            className="ipa template-input"
+            aria-label="Template"
             placeholder="e.g. CV(C)"
             value={d.raw}
             onChange={(e) => updateRaw(i, e.target.value)}
-            style={{ width: '10rem' }}
           />
           <input
             type="number"
+            className="num-input"
+            aria-label="Weight"
             min={0.01}
             step={0.01}
             value={d.weight}
             onChange={(e) => updateWeight(i, Number(e.target.value) || 0.01)}
-            style={{ width: '5rem', marginLeft: '0.5rem' }}
           />
-          <button
-            type="button"
-            onClick={() => removeAt(i)}
-            style={{ marginLeft: '0.5rem' }}
-          >
+          <Button variant="ghost" onClick={() => removeAt(i)}>
             Remove
-          </button>
+          </Button>
           {!d.result.ok && (
             <div className="error-text">
               {d.result.error.message} (position {d.result.error.position})
@@ -272,9 +260,7 @@ function TemplateEditor({
           )}
         </div>
       ))}
-      <button type="button" onClick={addDraft}>
-        Add template
-      </button>
+      <Button onClick={addDraft}>Add template</Button>
     </div>
   );
 }
@@ -323,12 +309,11 @@ function VowelHarmonyEditor({
 
   return (
     <div>
-      <div>
+      <div className="field-row">
         {inventory.phonemes
           .filter((p) => p.features.kind === 'vowel')
           .map((p) => (
-            <label key={p.id} style={{ marginRight: '1rem' }}>
-              <span className="ipa">{p.ipa}</span>{' '}
+            <Field key={p.id} label={<span className="ipa">{p.ipa}</span>} inline>
               <select
                 value={assignmentFor(p.id)}
                 onChange={(e) => assign(p.id, e.target.value)}
@@ -340,15 +325,15 @@ function VowelHarmonyEditor({
                   </option>
                 ))}
               </select>
-            </label>
+            </Field>
           ))}
       </div>
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={() => onChange({ ...constraint, sets: [...constraint.sets, []] })}
       >
         Add set
-      </button>
+      </Button>
     </div>
   );
 }
@@ -365,18 +350,15 @@ function ConstraintEditor({
   onRemove: () => void;
 }): JSX.Element {
   return (
-    <div
-      style={{
-        border: '1px solid var(--rule)',
-        padding: '0.5rem',
-        marginBottom: '0.5rem',
-      }}
+    <Panel
+      title={constraint.type}
+      actions={
+        <Button variant="ghost" onClick={onRemove}>
+          Remove
+        </Button>
+      }
     >
-      <strong>{constraint.type}</strong>
-      <button type="button" onClick={onRemove} style={{ marginLeft: '1rem' }}>
-        Remove
-      </button>
-      <div style={{ marginTop: '0.5rem' }}>
+      <div className="constraint-body">
         {constraint.type === 'BannedSequence' && (
           <BannedSequenceEditor constraint={constraint} onChange={onChange} />
         )}
@@ -398,7 +380,7 @@ function ConstraintEditor({
           <RequiredOnsetEditor constraint={constraint} onChange={onChange} />
         )}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -410,12 +392,11 @@ function BannedSequenceEditor({
   onChange: (next: Constraint) => void;
 }): JSX.Element {
   return (
-    <div>
-      <label>
-        Sequence (space-separated class refs or phoneme ids):{' '}
+    <div className="field-row">
+      <Field label="Sequence (space-separated class refs or phoneme ids)">
         <input
           type="text"
-          className="ipa"
+          className="ipa seq-input"
           value={constraint.sequence.join(' ')}
           onChange={(e) =>
             onChange({
@@ -423,11 +404,9 @@ function BannedSequenceEditor({
               sequence: e.target.value.split(/\s+/).filter(Boolean),
             })
           }
-          style={{ width: '10rem' }}
         />
-      </label>
-      <label style={{ marginLeft: '1rem' }}>
-        Scope:{' '}
+      </Field>
+      <Field label="Scope" inline>
         <select
           value={constraint.scope}
           onChange={(e) =>
@@ -440,7 +419,7 @@ function BannedSequenceEditor({
             </option>
           ))}
         </select>
-      </label>
+      </Field>
     </div>
   );
 }
@@ -456,31 +435,30 @@ function SonorityEditor({
 }): JSX.Element {
   return (
     <div>
-      <label>
-        <input
-          type="checkbox"
-          checked={constraint.allowPlateaus}
-          onChange={(e) => onChange({ ...constraint, allowPlateaus: e.target.checked })}
-        />{' '}
-        Allow sonority plateaus
-      </label>
-      <button
-        type="button"
-        style={{ marginLeft: '1rem' }}
-        onClick={() =>
-          onChange({ ...constraint, scale: defaultSonorityScale(inventory) })
-        }
-      >
-        Use default scale
-      </button>
-      <div
-        style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}
-      >
+      <div className="btn-row">
+        <label className="checkbox">
+          <input
+            type="checkbox"
+            checked={constraint.allowPlateaus}
+            onChange={(e) => onChange({ ...constraint, allowPlateaus: e.target.checked })}
+          />{' '}
+          Allow sonority plateaus
+        </label>
+        <Button
+          variant="ghost"
+          onClick={() =>
+            onChange({ ...constraint, scale: defaultSonorityScale(inventory) })
+          }
+        >
+          Use default scale
+        </Button>
+      </div>
+      <div className="field-row">
         {inventory.phonemes.map((p) => (
-          <label key={p.id}>
-            <span className="ipa">{p.ipa}</span>{' '}
+          <Field key={p.id} label={<span className="ipa">{p.ipa}</span>} inline>
             <input
               type="number"
+              className="num-input"
               value={constraint.scale[p.id] ?? ''}
               onChange={(e) =>
                 onChange({
@@ -488,9 +466,8 @@ function SonorityEditor({
                   scale: { ...constraint.scale, [p.id]: Number(e.target.value) || 0 },
                 })
               }
-              style={{ width: '3.5rem' }}
             />
-          </label>
+          </Field>
         ))}
       </div>
     </div>
@@ -505,8 +482,7 @@ function RequiredOnsetEditor({
   onChange: (next: Constraint) => void;
 }): JSX.Element {
   return (
-    <label>
-      Scope:{' '}
+    <Field label="Scope" inline>
       <select
         value={constraint.scope}
         onChange={(e) =>
@@ -519,7 +495,7 @@ function RequiredOnsetEditor({
         <option value="everySyllable">Every syllable</option>
         <option value="wordInitial">Word-initial only</option>
       </select>
-    </label>
+    </Field>
   );
 }
 
@@ -549,32 +525,32 @@ function SyllableCountEditor({
 
   return (
     <div>
-      <label>
-        Min syllables:{' '}
-        <input
-          type="number"
-          min={1}
-          value={value.min}
-          onChange={(e) => handleMinMax(Number(e.target.value) || 1, value.max)}
-          style={{ width: '4rem' }}
-        />
-      </label>
-      <label style={{ marginLeft: '1rem' }}>
-        Max syllables:{' '}
-        <input
-          type="number"
-          min={value.min}
-          value={value.max}
-          onChange={(e) => handleMinMax(value.min, Number(e.target.value) || value.min)}
-          style={{ width: '4rem' }}
-        />
-      </label>
-      <div style={{ marginTop: '0.5rem' }}>
+      <div className="field-row">
+        <Field label="Min syllables" inline>
+          <input
+            type="number"
+            className="num-input"
+            min={1}
+            value={value.min}
+            onChange={(e) => handleMinMax(Number(e.target.value) || 1, value.max)}
+          />
+        </Field>
+        <Field label="Max syllables" inline>
+          <input
+            type="number"
+            className="num-input"
+            min={value.min}
+            value={value.max}
+            onChange={(e) => handleMinMax(value.min, Number(e.target.value) || value.min)}
+          />
+        </Field>
+      </div>
+      <div className="field-row">
         {value.weights.map((w, i) => (
-          <label key={i} style={{ marginRight: '1rem' }}>
-            {value.min + i} syll:{' '}
+          <Field key={i} label={`${value.min + i} syll`} inline>
             <input
               type="number"
+              className="num-input"
               min={0}
               step={0.01}
               value={w}
@@ -583,9 +559,8 @@ function SyllableCountEditor({
                 weights[i] = Number(e.target.value) || 0;
                 onChange({ ...value, weights });
               }}
-              style={{ width: '4rem' }}
             />
-          </label>
+          </Field>
         ))}
       </div>
     </div>
@@ -668,29 +643,31 @@ export function PhonotacticsPage(): JSX.Element {
               }
             />
           ))}
-          <label>
-            <select
-              value={addConstraintType}
-              onChange={(e) => setAddConstraintType(e.target.value as Constraint['type'])}
+          <div className="btn-row">
+            <Field label="Add constraint" inline>
+              <select
+                value={addConstraintType}
+                onChange={(e) =>
+                  setAddConstraintType(e.target.value as Constraint['type'])
+                }
+              >
+                <option value="RequiredOnset">Required onset</option>
+                <option value="BannedSequence">Banned sequence</option>
+                <option value="Sonority">Sonority</option>
+                <option value="VowelHarmony">Vowel harmony</option>
+              </select>
+            </Field>
+            <Button
+              onClick={() =>
+                setConstraints([
+                  ...grammar.constraints,
+                  defaultConstraint(addConstraintType, inventory),
+                ])
+              }
             >
-              <option value="RequiredOnset">Required onset</option>
-              <option value="BannedSequence">Banned sequence</option>
-              <option value="Sonority">Sonority</option>
-              <option value="VowelHarmony">Vowel harmony</option>
-            </select>
-          </label>
-          <button
-            type="button"
-            style={{ marginLeft: '0.5rem' }}
-            onClick={() =>
-              setConstraints([
-                ...grammar.constraints,
-                defaultConstraint(addConstraintType, inventory),
-              ])
-            }
-          >
-            Add constraint
-          </button>
+              Add constraint
+            </Button>
+          </div>
         </div>
 
         <div className="preview-panel">

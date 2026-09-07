@@ -344,6 +344,42 @@ select {
   margin-right: var(--space-2);
 }
 
+/* The live preview is the heart of the UX — keep it in view while the rail scrolls. */
+.preview-panel {
+  position: sticky;
+  top: var(--space-6);
+  align-self: start;
+}
+
+.member-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.symbol-input {
+  width: 2rem;
+  text-transform: uppercase;
+}
+
+.template-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.template-row .error-text {
+  flex-basis: 100%;
+}
+
+.template-input,
+.seq-input {
+  width: 10rem;
+}
+
 /* Lexicon page — dictionary entries, virtualized (DESIGN.md §5.3) */
 
 .lexicon-controls {
