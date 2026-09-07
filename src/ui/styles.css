@@ -208,6 +208,14 @@ select {
   margin-bottom: var(--space-4);
 }
 
+.selected-table {
+  max-width: 32rem;
+}
+
+.roman-input {
+  width: 5rem;
+}
+
 .chart-table th {
   font-family: var(--font-ui);
   font-size: var(--text-tag);

@@ -14,6 +14,8 @@ import type {
 import type { Phoneme } from '../../core/phoneme';
 import { starterInventory } from '../../core/phoneme';
 import { findCollisions } from '../../core/romanization';
+import { Button } from '../components/Button';
+import { Table } from '../components/Table';
 import { useChartGrid, type ChartCoord } from '../hooks/useChartGrid';
 import { useWorkbenchStore } from '../state/store';
 
@@ -330,7 +332,7 @@ export function InventoryPage(): JSX.Element {
       {inventory.phonemes.length === 0 ? (
         <p>No phonemes yet — pick from the charts above to begin.</p>
       ) : (
-        <table>
+        <Table label="Selected phonemes" className="selected-table">
           <thead>
             <tr>
               <th>IPA</th>
@@ -346,34 +348,36 @@ export function InventoryPage(): JSX.Element {
                 <td>
                   <input
                     type="number"
+                    className="num-input"
+                    aria-label="Weight"
                     min={0.01}
                     step={0.01}
                     value={p.weight}
                     onChange={(e) =>
                       updatePhoneme(p.id, { weight: Number(e.target.value) || 0.01 })
                     }
-                    style={{ width: '5rem' }}
                   />
                 </td>
                 <td>
                   <input
                     type="text"
+                    className="roman-input"
+                    aria-label="Romanization"
                     value={p.romanization}
                     onChange={(e) =>
                       updatePhoneme(p.id, { romanization: e.target.value })
                     }
-                    style={{ width: '5rem' }}
                   />
                 </td>
                 <td>
-                  <button type="button" onClick={() => removePhoneme(p.id)}>
+                  <Button variant="ghost" onClick={() => removePhoneme(p.id)}>
                     Remove
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </section>
   );
