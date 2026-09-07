@@ -5,6 +5,10 @@ import { Fragment, useMemo, useState } from 'react';
 import { render } from '../../core/romanization';
 import { derive, type DerivationStep } from '../../core/soundchange/derivation';
 import { parseRule, type SoundChangeRule } from '../../core/soundchange/parser';
+import { Button } from '../components/Button';
+import { cx } from '../components/classNames';
+import { Field } from '../components/Field';
+import { Table } from '../components/Table';
 import { useWorkbenchStore } from '../state/store';
 
 const KNOWN_CLASSES = ['C', 'V'];
@@ -140,7 +144,7 @@ export function SoundChangesPage(): JSX.Element {
       <h2>Sound Changes</h2>
 
       <h3>Rules (applied in order)</h3>
-      <table>
+      <Table label="Sound change rules" className="rules-table">
         <thead>
           <tr>
             <th>&nbsp;</th>
@@ -155,17 +159,19 @@ export function SoundChangesPage(): JSX.Element {
             return (
               <tr
                 key={rule.id}
+                className={cx('rules-row', dragIndex === i && 'is-dragging')}
                 draggable
                 onDragStart={() => setDragIndex(i)}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => handleDrop(i)}
               >
-                <td style={{ cursor: 'grab' }} title="Drag to reorder">
+                <td className="rules-grip" aria-hidden="true" title="Drag to reorder">
                   ⠿
                 </td>
                 <td>
                   <input
                     type="checkbox"
+                    aria-label="Enabled"
                     checked={rule.enabled}
                     onChange={() => toggleEnabled(rule.id)}
                   />
@@ -173,11 +179,11 @@ export function SoundChangesPage(): JSX.Element {
                 <td>
                   <input
                     type="text"
-                    className="ipa"
+                    className="ipa rule-input"
+                    aria-label="Rule"
                     placeholder="e.g. p > f"
                     value={rule.raw}
                     onChange={(e) => updateRuleRaw(rule.id, e.target.value)}
-                    style={{ width: '16rem' }}
                   />
                   {!parseResult.ok && (
                     <div className="error-text">
@@ -186,24 +192,24 @@ export function SoundChangesPage(): JSX.Element {
                   )}
                 </td>
                 <td>
-                  <button type="button" onClick={() => removeRule(rule.id)}>
+                  <Button variant="ghost" onClick={() => removeRule(rule.id)}>
                     Remove
-                  </button>
+                  </Button>
                 </td>
               </tr>
             );
           })}
         </tbody>
-      </table>
-      <button type="button" onClick={addRule}>
-        Add rule
-      </button>
+      </Table>
+      <div className="btn-row">
+        <Button onClick={addRule}>Add rule</Button>
+      </div>
 
       <h3>Before → after</h3>
       {project.lexicon.length === 0 ? (
         <p>No lexicon yet — generate words on the Lexicon page first.</p>
       ) : (
-        <table>
+        <Table label="Before and after" className="diff-table">
           <thead>
             <tr>
               <th>Before</th>
@@ -223,12 +229,12 @@ export function SoundChangesPage(): JSX.Element {
                     <td className="ipa">{before}</td>
                     <td className="ipa">{after}</td>
                     <td>
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
                         onClick={() => setExpandedIndex(expanded ? null : i)}
                       >
                         {expanded ? 'Hide' : 'Show'} derivation
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                   {expanded && (
@@ -255,27 +261,23 @@ export function SoundChangesPage(): JSX.Element {
               );
             })}
           </tbody>
-        </table>
+        </Table>
       )}
 
       <h3>Fork daughter language</h3>
-      <label>
-        Name:{' '}
-        <input
-          type="text"
-          value={daughterName}
-          onChange={(e) => setDaughterName(e.target.value)}
-          style={{ width: '14rem' }}
-        />
-      </label>
-      <button
-        type="button"
-        style={{ marginLeft: '0.5rem' }}
-        onClick={handleFork}
-        disabled={project.lexicon.length === 0}
-      >
-        Fork daughter language
-      </button>
+      <div className="fork-row">
+        <Field label="Name" inline>
+          <input
+            type="text"
+            className="fork-name-input"
+            value={daughterName}
+            onChange={(e) => setDaughterName(e.target.value)}
+          />
+        </Field>
+        <Button onClick={handleFork} disabled={project.lexicon.length === 0}>
+          Fork daughter language
+        </Button>
+      </div>
     </section>
   );
 }
